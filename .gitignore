@@ -1,0 +1,17 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Python template
+
+# PyCharm
+.idea/
+
+# Flask stuff:
+*.log
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# my
+other/
