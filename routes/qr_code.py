@@ -46,13 +46,16 @@ def send_QRcode():
 
     fns_connector = FNSConnector()
 
-    if not fns_connector.is_qrcode_correct(qrcode):
-        return jsonify({'error': "Not Acceptable. Check is not found."}), 406
+    try:
+        if not fns_connector.is_qrcode_correct(qrcode):
+            return jsonify({'error': "Not Acceptable. Check is not found."}), 406
 
-    check = fns_connector.get_check(qrcode)
-    if check is None:
-        # add to waiting list
-        return jsonify({'message': "Check is not ready, added to waiting list."}), 202
+        check = fns_connector.get_check(qrcode)
+        if check is None:
+            # add to waiting list
+            return jsonify({'message': "Check is not ready, added to waiting list."}), 202
+    except ConnectionError:
+        return jsonify({'error': "Gateway Timeout."}), 504
 
     check = parse_check(check)
     checks.append(check)
