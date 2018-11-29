@@ -7,7 +7,7 @@ def parse_check(check_dict):
     items_list = list()
     for item in check_dict['items']:
         item_obj = Item(name=item['name'],
-                        price=item['sum'],
+                        price=item['sum'] / 100,
                         quantity=item['quantity'])
         items_list.append(item_obj)
 
