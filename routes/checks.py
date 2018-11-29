@@ -25,7 +25,7 @@ def get_recent_checks():
 
     checks_list = list()
     for check in checks[-num:]:
-        tmp = marshal(vars(check), check_fields)
-        checks_list.append(tmp)
+        marshalled_check = marshal(vars(check), check_fields)
+        checks_list.append(marshalled_check)
 
     return jsonify({'checks': checks_list}), 200
