@@ -25,10 +25,10 @@ def user_login():
 
     # request to DB
     if content['username'] not in users:
-        return jsonify({'error': "Forbidden. Authorization information is invalid."}), 403
+        return jsonify({'error': "Forbidden. Authorization information is invalid. No account with this username."}), 403
     else:
         if content['password'] != users[content['username']]:
-            return jsonify({'error': "Forbidden. Authorization information is invalid."}), 403
+            return jsonify({'error': "Forbidden. Invalid password."}), 403
 
     return jsonify({'message': "Successfully logged in."}), 201
 
