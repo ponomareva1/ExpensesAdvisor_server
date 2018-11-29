@@ -1,7 +1,7 @@
 {
 	"_type": "export",
 	"__export_format": 3,
-	"__export_date": "2018-11-25T21:33:48.748Z",
+	"__export_date": "2018-11-29T21:41:23.428Z",
 	"__export_source": "insomnia.desktop.app:v6.2.0",
 	"resources": [
 		{
@@ -83,7 +83,7 @@
 			},
 			"isPrivate": false,
 			"metaSortKey": 1537981796555,
-			"modified": 1541426885703,
+			"modified": 1543525962037,
 			"name": "course_proj",
 			"parentId": "env_c9f47db1e9da43899ab835f987b1d071",
 			"_type": "environment"
@@ -109,8 +109,8 @@
 			"created": 1539810467981,
 			"description": "",
 			"environment": {},
-			"metaSortKey": -1543073565991,
-			"modified": 1543153413803,
+			"metaSortKey": -1543073565891,
+			"modified": 1543524854042,
 			"name": "FNS",
 			"parentId": "fld_d56d13997f17459caed91b27844609db",
 			"_type": "request_group"
@@ -149,6 +149,17 @@
 			"_type": "request_group"
 		},
 		{
+			"_id": "fld_507590ef890c40eaa4f1f05c0610c955",
+			"created": 1543523305552,
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1543523305552,
+			"modified": 1543523305552,
+			"name": "user",
+			"parentId": "fld_d56d13997f17459caed91b27844609db",
+			"_type": "request_group"
+		},
+		{
 			"_id": "req_28e5dfbaed4943be9e5919a638c916c6",
 			"authentication": {
 				"disabled": false,
@@ -163,7 +174,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1538079912060,
 			"method": "GET",
-			"modified": 1543081018229,
+			"modified": 1543523383755,
 			"name": "login_in_FNS",
 			"parameters": [],
 			"parentId": "fld_f479b3a7755d42719674062b9156d22d",
@@ -191,7 +202,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1538079912035,
 			"method": "GET",
-			"modified": 1543171402316,
+			"modified": 1543523409583,
 			"name": "check_if_exist_1",
 			"parameters": [],
 			"parentId": "fld_f479b3a7755d42719674062b9156d22d",
@@ -230,7 +241,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1538079912010,
 			"method": "GET",
-			"modified": 1543172358697,
+			"modified": 1543520210250,
 			"name": "get_info_from_check_1",
 			"parameters": [],
 			"parentId": "fld_f479b3a7755d42719674062b9156d22d",
@@ -308,7 +319,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1538055505559.5,
 			"method": "GET",
-			"modified": 1543171520404,
+			"modified": 1543520212483,
 			"name": "get_info_from_check_2",
 			"parameters": [],
 			"parentId": "fld_f479b3a7755d42719674062b9156d22d",
@@ -401,7 +412,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1541426857656,
 			"method": "POST",
-			"modified": 1543176731445,
+			"modified": 1543527392161,
 			"name": "sendQRcode1",
 			"parameters": [],
 			"parentId": "fld_e19d13cf9fc14343a92a52a737ab7879",
@@ -418,9 +429,9 @@
 			"_id": "req_bcf2dd5b42de46558b912d1d8dd65a57",
 			"authentication": {
 				"disabled": false,
-				"password": "ponome",
+				"password": "{{ password  }}",
 				"type": "basic",
-				"username": "ponome"
+				"username": "{{ username  }}"
 			},
 			"body": {
 				"mimeType": "application/json",
@@ -436,9 +447,9 @@
 				}
 			],
 			"isPrivate": false,
-			"metaSortKey": -1543073585737,
+			"metaSortKey": -1539096412728.75,
 			"method": "POST",
-			"modified": 1543171134745,
+			"modified": 1543526336646,
 			"name": "invalidFormat_not_all",
 			"parameters": [],
 			"parentId": "fld_e19d13cf9fc14343a92a52a737ab7879",
@@ -455,9 +466,9 @@
 			"_id": "req_d0486c0af243499187f18f8dcf7246c4",
 			"authentication": {
 				"disabled": false,
-				"password": "ponome",
+				"password": "{{ password  }}",
 				"type": "basic",
-				"username": "ponome"
+				"username": "{{ username  }}"
 			},
 			"body": {
 				"mimeType": "application/json",
@@ -473,9 +484,9 @@
 				}
 			],
 			"isPrivate": false,
-			"metaSortKey": -1542251298790.5,
+			"metaSortKey": -1539096412778.75,
 			"method": "POST",
-			"modified": 1543171132706,
+			"modified": 1543526334527,
 			"name": "invalidFormat_date",
 			"parameters": [],
 			"parentId": "fld_e19d13cf9fc14343a92a52a737ab7879",
@@ -492,9 +503,9 @@
 			"_id": "req_cad677bda32c4cfab2a6079361a07031",
 			"authentication": {
 				"disabled": false,
-				"password": "ponome",
+				"password": "{{ password  }}",
 				"type": "basic",
-				"username": "ponome"
+				"username": "{{ username  }}"
 			},
 			"body": {
 				"mimeType": "application/json",
@@ -510,9 +521,9 @@
 				}
 			],
 			"isPrivate": false,
-			"metaSortKey": -1541840155317.25,
+			"metaSortKey": -1539096412828.75,
 			"method": "POST",
-			"modified": 1543173865297,
+			"modified": 1543526328992,
 			"name": "invalid_code",
 			"parameters": [],
 			"parentId": "fld_e19d13cf9fc14343a92a52a737ab7879",
@@ -549,7 +560,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1539873227804.5,
 			"method": "POST",
-			"modified": 1543175440982,
+			"modified": 1543526285070,
 			"name": "sendQRcode2",
 			"parameters": [],
 			"parentId": "fld_e19d13cf9fc14343a92a52a737ab7879",
@@ -586,8 +597,45 @@
 			"isPrivate": false,
 			"metaSortKey": -1539096412878.75,
 			"method": "POST",
-			"modified": 1543175443306,
+			"modified": 1543526286078,
 			"name": "sendQRcode3",
+			"parameters": [],
+			"parentId": "fld_e19d13cf9fc14343a92a52a737ab7879",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ base_url  }}/sendQRcode",
+			"_type": "request"
+		},
+		{
+			"_id": "req_e7353d9744c948eda8fa91503e31fc1c",
+			"authentication": {
+				"disabled": false,
+				"password": "test",
+				"type": "basic",
+				"username": "test"
+			},
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"t\": \"20180927T1801\",\n\t\"s\": \"32877\",\n\t\"fn\": \"9282000100155754\",\n\t\"fd\": \"8723\",\n\t\"fp\": \"2472140768\"\n}"
+			},
+			"created": 1543526218726,
+			"description": "",
+			"headers": [
+				{
+					"id": "pair_d715ce35a5b7411a87fbb29b65c42344",
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"isPrivate": false,
+			"metaSortKey": -1539096412853.75,
+			"method": "POST",
+			"modified": 1543526339615,
+			"name": "sendQRcode1_testuser",
 			"parameters": [],
 			"parentId": "fld_e19d13cf9fc14343a92a52a737ab7879",
 			"settingDisableRenderRequestBody": false,
@@ -603,9 +651,9 @@
 			"_id": "req_0c41a063513548dea982361f2bed52f8",
 			"authentication": {
 				"disabled": false,
-				"password": "ponome",
+				"password": "{{ password  }}",
 				"type": "basic",
-				"username": "ponome"
+				"username": "{{ username  }}"
 			},
 			"body": {},
 			"created": 1543166749391,
@@ -614,7 +662,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1543166749391,
 			"method": "GET",
-			"modified": 1543181598572,
+			"modified": 1543526356411,
 			"name": "get_recent",
 			"parameters": [],
 			"parentId": "fld_f5f11e8435df4fbe95d0b36f722bb62d",
@@ -631,9 +679,9 @@
 			"_id": "req_25d634ef9f734cce9b9f9e2cd8c8626e",
 			"authentication": {
 				"disabled": false,
-				"password": "ponome",
+				"password": "{{ password  }}",
 				"type": "basic",
-				"username": "ponome"
+				"username": "{{ username  }}"
 			},
 			"body": {},
 			"created": 1543171206037,
@@ -642,7 +690,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1543120167564,
 			"method": "GET",
-			"modified": 1543175449093,
+			"modified": 1543526356017,
 			"name": "get_recent_2",
 			"parameters": [],
 			"parentId": "fld_f5f11e8435df4fbe95d0b36f722bb62d",
@@ -659,9 +707,9 @@
 			"_id": "req_12054b6b07a74bf282737d7e7df2195d",
 			"authentication": {
 				"disabled": false,
-				"password": "ponome",
+				"password": "{{ password  }}",
 				"type": "basic",
-				"username": "ponome"
+				"username": "{{ username  }}"
 			},
 			"body": {},
 			"created": 1543172153813,
@@ -670,7 +718,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1543096876650.5,
 			"method": "GET",
-			"modified": 1543175451477,
+			"modified": 1543526269605,
 			"name": "get_recent_negative_num",
 			"parameters": [],
 			"parentId": "fld_f5f11e8435df4fbe95d0b36f722bb62d",
@@ -687,9 +735,9 @@
 			"_id": "req_0ef9eec9ccce4ec3a2bed1525f241044",
 			"authentication": {
 				"disabled": false,
-				"password": "ponome",
+				"password": "{{ password  }}",
 				"type": "basic",
-				"username": "ponome"
+				"username": "{{ username  }}"
 			},
 			"body": {},
 			"created": 1543172180438,
@@ -698,7 +746,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1543085231193.75,
 			"method": "GET",
-			"modified": 1543175453382,
+			"modified": 1543526279403,
 			"name": "get_recent_invalid_num",
 			"parameters": [],
 			"parentId": "fld_f5f11e8435df4fbe95d0b36f722bb62d",
@@ -715,9 +763,9 @@
 			"_id": "req_680eae43297e43009fc3903f88ee7933",
 			"authentication": {
 				"disabled": false,
-				"password": "ponome",
+				"password": "{{ password  }}",
 				"type": "basic",
-				"username": "ponome"
+				"username": "{{ username  }}"
 			},
 			"body": {},
 			"created": 1543175470698,
@@ -726,7 +774,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1543175470698,
 			"method": "GET",
-			"modified": 1543176702506,
+			"modified": 1543526361064,
 			"name": "get_from_check",
 			"parameters": [],
 			"parentId": "fld_04d52263a6ab4f539803113f16fa9b0d",
@@ -736,7 +784,99 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{ base_url  }}/items/checkID/1",
+			"url": "{{ base_url  }}/items/checkID/79",
+			"_type": "request"
+		},
+		{
+			"_id": "req_724977ba72b54e0498b3f4a8870e3461",
+			"authentication": {
+				"disabled": false,
+				"password": "{{ password  }}",
+				"type": "basic",
+				"username": "{{ username  }}"
+			},
+			"body": {},
+			"created": 1543523317319,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1543523317319,
+			"method": "POST",
+			"modified": 1543527390568,
+			"name": "fns_login",
+			"parameters": [],
+			"parentId": "fld_507590ef890c40eaa4f1f05c0610c955",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ base_url  }}/fns/login",
+			"_type": "request"
+		},
+		{
+			"_id": "req_254f387dc61e402a86fe3ec449d8efd5",
+			"authentication": {},
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"username\": \"test\",\n\t\"password\": \"test\"\n}"
+			},
+			"created": 1543523418153,
+			"description": "",
+			"headers": [
+				{
+					"id": "pair_423f5a918ab3421999719045a1ce1edc",
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"isPrivate": false,
+			"metaSortKey": -1543523418153,
+			"method": "POST",
+			"modified": 1543527372145,
+			"name": "user_login",
+			"parameters": [],
+			"parentId": "fld_507590ef890c40eaa4f1f05c0610c955",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ base_url  }}/user/login",
+			"_type": "request"
+		},
+		{
+			"_id": "req_52554ec5ced44b969cadd039a6e9e302",
+			"authentication": {},
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"username\": \"test\",\n\t\"password\": \"test\"\n}"
+			},
+			"created": 1543523425649,
+			"description": "",
+			"headers": [
+				{
+					"id": "pair_bd4a5942e0574bc395cfb86ca7020fde",
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"isPrivate": false,
+			"metaSortKey": -1543523425649,
+			"method": "POST",
+			"modified": 1543527369772,
+			"name": "user_registration",
+			"parameters": [],
+			"parentId": "fld_507590ef890c40eaa4f1f05c0610c955",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ base_url  }}/user/registration",
 			"_type": "request"
 		}
 	]
