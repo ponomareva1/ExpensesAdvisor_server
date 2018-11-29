@@ -45,7 +45,6 @@ def send_QRcode():
     QRcodes.append(qrcode)
 
     fns_connector = FNSConnector()
-    fns_connector.login()
 
     if not fns_connector.is_qrcode_correct(qrcode):
         return jsonify({'error': "Not Acceptable. Check is not found."}), 406

@@ -1,4 +1,4 @@
-from flask import Flask, make_response
+from flask import Flask, make_response, jsonify
 from flask_httpauth import HTTPBasicAuth
 
 from routes import *
@@ -10,10 +10,10 @@ auth = HTTPBasicAuth()
 app.register_blueprint(qrcode_route)
 app.register_blueprint(checks_route)
 app.register_blueprint(items_route)
+app.register_blueprint(user_route)
 
 users = {
-    "ponome": "ponome",
-    "test": "test"
+    "ponome": "ponome"
 }
 
 

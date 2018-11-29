@@ -24,7 +24,12 @@ class FNSConnector:
     def login(self):
         url = self.base_url + self.paths['login']
 
-        response = requests.get(url, auth=(self.username, self.password))
+        try:
+            response = requests.get(url, auth=(self.username, self.password), timeout=0.1)
+        except requests.exceptions.Timeout:
+            logging.error("Gateway Timeout while FNS login")
+            raise ConnectionError("Not able to login in FNS")
+
         if not response.ok:
             logging.error("Not able to login in FNS: {username}, {password}".format(username=self.username,
                                                                                     password=self.password))
@@ -36,7 +41,12 @@ class FNSConnector:
         prepared_url = self.base_url + self.paths['check']
         url = self.format_url(prepared_url, qrcode)
 
-        response = requests.get(url)
+        try:
+            response = requests.get(url, timeout=0.1)
+        except requests.exceptions.Timeout:
+            logging.error("Gateway Timeout while request to {}".format(prepared_url))
+            raise ConnectionError
+
         if response.ok:
             logging.info("Correct QR code info / Check found")
             logging.info("QR code: {}".format(vars(qrcode)))
@@ -50,9 +60,15 @@ class FNSConnector:
         prepared_url = self.base_url + self.paths['info']
         url = self.format_url(prepared_url, qrcode)
 
-        response = requests.get(url,
-                                headers={"device-Id": "", "device-os": ""},
-                                auth=(self.username, self.password))
+        try:
+            response = requests.get(url,
+                                    headers={"device-Id": "", "device-os": ""},
+                                    auth=(self.username, self.password),
+                                    timeout=0.1)
+        except requests.exceptions.Timeout:
+            logging.error("Gateway Timeout while request to {}".format(prepared_url))
+            raise ConnectionError
+
         if response.ok:
             logging.info("Check received from server")
 
