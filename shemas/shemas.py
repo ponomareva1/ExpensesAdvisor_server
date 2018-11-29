@@ -15,7 +15,11 @@ class QRcode:
 
 class Item:
     def __init__(self, name, price, quantity, id=None, category=None):
-        self.id = id  # ID товара
+        from random import randint  # tmp while no DB added
+        if not id:
+            self.id = randint(0, 100)
+        else:
+            self.id = id  # ID чека
         self.name = name  # Полное наименование товара
         self.price = price  # Цена
         self.quantity = quantity  # Количество / вес товара в кг
@@ -28,7 +32,11 @@ class Item:
 
 class Check:
     def __init__(self, date, shop, sum, items, specifier, id=None):
-        self.id = id  # ID чека
+        from random import randint
+        if not id:
+            self.id = randint(0, 100)
+        else:
+            self.id = id  # ID чека
         self.date = date  # Дата совершения покупки
         self.shop = shop  # Магазин, в котором совершили покупку
         self.sum = sum  # Полная сумма

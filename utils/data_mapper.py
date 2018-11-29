@@ -9,7 +9,7 @@ def parse_check(check_dict):
         item_obj = Item(name=item['name'],
                         price=item['sum'],
                         quantity=item['quantity'])
-        items_list.append(vars(item_obj))
+        items_list.append(item_obj)
 
     date = datetime.strptime(check_dict['dateTime'], '%Y-%m-%dT%H:%M:%S')
     shop = check_dict['retailPlace'] if 'retailPlace' in check_dict else check_dict['user']
