@@ -4,7 +4,6 @@ from flask_restful import marshal, fields
 from main import auth, checks, invalid_input
 from routes import checks_route
 
-
 check_fields = {
     'id': fields.Integer,
     'date': fields.DateTime(dt_format='iso8601'),

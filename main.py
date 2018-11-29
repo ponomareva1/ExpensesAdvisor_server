@@ -1,11 +1,10 @@
-from flask import Flask, make_response, jsonify
+from flask import Flask, make_response
 from flask_httpauth import HTTPBasicAuth
 
 from routes import *
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
-# app.config['BUNDLE_ERRORS'] = True
 auth = HTTPBasicAuth()
 
 app.register_blueprint(qrcode_route)

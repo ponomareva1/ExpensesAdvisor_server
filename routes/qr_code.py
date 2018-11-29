@@ -2,11 +2,11 @@ from flask import request, jsonify
 from flask_restful import marshal, fields
 
 from main import auth, invalid_input, checks, QRcodes
+from routes import qrcode_route
+from routes.checks import check_fields
 from shemas.shemas import QRcode
 from utils.data_mapper import parse_check
 from utils.fns import FNSConnector
-from routes import qrcode_route
-from routes.checks import check_fields
 
 QRcode_fields = {
     't': fields.String,
@@ -20,6 +20,7 @@ QRcode_fields = {
 @qrcode_route.route('/sendQRcode', methods=['POST'])
 @auth.login_required
 def send_QRcode():
+    # print(request.authorization["username"])
     content = request.get_json(force=True, silent=True)
     if any(key not in content for key in ('t', 'fn', 'fp', 'fd', 's')):
         return invalid_input("Invalid json format (not all fields are present)")

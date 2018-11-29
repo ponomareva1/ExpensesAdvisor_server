@@ -7,10 +7,10 @@ class QRcode:
         self.s = s  # Сумма чека в копейках
 
 
-# class Category:
-#     def __init__(self, id, name):
-#         self.id = id  # ID категории
-#         self.name = name  # Категория
+class Category:
+    def __init__(self, id, name):
+        self.id = id  # ID категории
+        self.name = name  # Категория
 
 
 class Item:

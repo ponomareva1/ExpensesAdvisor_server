@@ -1,11 +1,12 @@
 import logging
+
 import requests
 
 from shemas.shemas import QRcode
 
-logging.basicConfig(filename="../fnsConnection.log",
+logging.basicConfig(filename="fnsConnection.log",
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.DEBUG)
+                    level=logging.INFO)
 
 
 class FNSConnector:
