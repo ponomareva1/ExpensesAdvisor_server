@@ -4,9 +4,12 @@ import requests
 
 from shemas.shemas import QRcode
 
-logging.basicConfig(filename="fnsConnection.log",
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logger = logging.getLogger("fns_connector")
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler("fnsConnection.log")
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 class FNSConnector:
@@ -27,15 +30,15 @@ class FNSConnector:
         try:
             response = requests.get(url, auth=(self.username, self.password), timeout=0.1)
         except requests.exceptions.Timeout:
-            logging.error("Gateway Timeout while FNS login")
+            logger.error("Gateway Timeout while FNS login")
             raise ConnectionError("Not able to login in FNS")
 
         if not response.ok:
-            logging.error("Not able to login in FNS: {username}, {password}".format(username=self.username,
+            logger.error("Not able to login in FNS: {username}, {password}".format(username=self.username,
                                                                                     password=self.password))
             raise ConnectionError("Not able to login in FNS")
 
-        logging.info("Successful login")
+        logger.info("Successful login")
 
     def is_qrcode_correct(self, qrcode: QRcode):
         prepared_url = self.base_url + self.paths['check']
@@ -44,16 +47,16 @@ class FNSConnector:
         try:
             response = requests.get(url, timeout=0.1)
         except requests.exceptions.Timeout:
-            logging.error("Gateway Timeout while request to {}".format(prepared_url))
+            logger.error("Gateway Timeout while request to {}".format(prepared_url))
             raise ConnectionError
 
         if response.ok:
-            logging.info("Correct QR code info / Check found")
-            logging.info("QR code: {}".format(vars(qrcode)))
+            logger.info("Correct QR code info / Check found")
+            logger.info("QR code: {}".format(vars(qrcode)))
             return True
         else:
-            logging.error("Incorrect QR code info / Check not found")
-            logging.error("QR code: {}".format(vars(qrcode)))
+            logger.error("Incorrect QR code info / Check not found")
+            logger.error("QR code: {}".format(vars(qrcode)))
             return False
 
     def get_check(self, qrcode: QRcode):
@@ -66,21 +69,21 @@ class FNSConnector:
                                     auth=(self.username, self.password),
                                     timeout=0.1)
         except requests.exceptions.Timeout:
-            logging.error("Gateway Timeout while request to {}".format(prepared_url))
+            logger.error("Gateway Timeout while request to {}".format(prepared_url))
             raise ConnectionError
 
         if response.ok:
-            logging.info("Check received from server")
+            logger.info("Check received from server")
 
             if response.text == '':
-                logging.warning("Empty check body")
+                logger.warning("Empty check body")
                 return None
             check = response.json()['document']['receipt']
-            logging.info("Check: {}".format(check))
+            logger.info("Check: {}".format(check))
             return check
         else:
-            logging.error("Was not able to receive check from server")
-            logging.error("QR code: {}".format(vars(qrcode)))
+            logger.error("Was not able to receive check from server")
+            logger.error("QR code: {}".format(vars(qrcode)))
             return None
 
     @staticmethod
