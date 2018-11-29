@@ -12,7 +12,7 @@ def fns_login():
     try:
         fns_connector.login()
     except ConnectionError:
-        return jsonify({'error': "Gateway Timeout."}), 504
+        return jsonify({'error': "FNS service currently unavailable."}), 503
 
     return jsonify({'message': "Successfully logged in."}), 201
 
