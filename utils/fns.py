@@ -35,7 +35,7 @@ class FNSConnector:
 
         if not response.ok:
             logger.error("Not able to login in FNS: {username}, {password}".format(username=self.username,
-                                                                                    password=self.password))
+                                                                                   password=self.password))
             raise ConnectionError("Not able to login in FNS")
 
         logger.info("Successful login")

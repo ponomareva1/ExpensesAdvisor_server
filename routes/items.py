@@ -5,9 +5,11 @@ from main import auth, checks, invalid_input
 from routes import items_route
 
 item_fields = {
+    'id': fields.Integer,
     'name': fields.String,
     'price': fields.Float,
-    'quantity': fields.Float
+    'quantity': fields.Float,
+    'category': fields.String
 }
 
 

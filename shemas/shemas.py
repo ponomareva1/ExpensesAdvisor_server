@@ -24,7 +24,7 @@ class Item:
         self.price = price  # Цена
         self.quantity = quantity  # Количество / вес товара в кг
         if not category:  # Если у товара нет категории
-            self.category = None
+            self.category = "Продукты"
         else:
             # self.category = vars(category)  # dict полей объекта Category
             self.category = category  # Наименование категории
