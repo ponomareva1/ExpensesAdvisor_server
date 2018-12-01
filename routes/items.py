@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from flask_restful import fields, marshal
 
-from main import auth, checks, invalid_input
+from main import auth, checks, invalid_input, categories
 from routes import items_route
 
 item_fields = {
@@ -50,7 +50,6 @@ def update_items_category():
         return invalid_input("Category must be a string.")
 
     # request to DB
-
     for id in ids:
         updated = False
         for check in checks:
@@ -62,3 +61,14 @@ def update_items_category():
             return jsonify({'error': "Item with the ID={} was not found.".format(id)}), 404
 
     return jsonify({'message': "Items category updated."}), 200
+
+
+@items_route.route('/categories', methods=['GET'])
+@auth.login_required
+def get_categories():
+    # request to DB
+    categories_list = list()
+    for k, v in categories.items():
+        categories_list.append(v)
+
+    return jsonify({'categories': categories_list}), 200

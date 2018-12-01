@@ -12,7 +12,3 @@
 .venv
 env/
 venv/
-
-# my
-other/
-__pycache__/

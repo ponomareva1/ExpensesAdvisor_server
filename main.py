@@ -36,6 +36,8 @@ def unauthorized():
 
 checks = list()
 QRcodes = list()
+categories = {1: "Продукты",
+              2: "Услуги"}
 
 if __name__ == '__main__':
     app.run(debug=True)
