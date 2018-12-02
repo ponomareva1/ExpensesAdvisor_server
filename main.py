@@ -11,6 +11,7 @@ app.register_blueprint(qrcode_route)
 app.register_blueprint(checks_route)
 app.register_blueprint(items_route)
 app.register_blueprint(user_route)
+app.register_blueprint(statistics_route)
 
 users = {
     "ponome": "ponome"
