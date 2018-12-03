@@ -1,3 +1,7 @@
+import atexit
+from datetime import datetime
+
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, make_response, jsonify
 from flask_httpauth import HTTPBasicAuth
 
@@ -12,6 +16,7 @@ app.register_blueprint(checks_route)
 app.register_blueprint(items_route)
 app.register_blueprint(user_route)
 app.register_blueprint(statistics_route)
+
 
 users = {
     "ponome": "ponome"
@@ -40,5 +45,18 @@ QRcodes = list()
 categories = {1: "Продукты",
               2: "Услуги"}
 
+
+def scheduled_job():
+    print(datetime.now())
+
+
+@app.before_first_request
+def init_scheduler():
+    scheduler = BackgroundScheduler(daemon=True)
+    scheduler.add_job(scheduled_job, 'interval', hours=1)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(use_reloader=False)

@@ -28,7 +28,7 @@ class FNSConnector:
         url = self.base_url + self.paths['login']
 
         try:
-            response = requests.get(url, auth=(self.username, self.password), timeout=0.1)
+            response = requests.get(url, auth=(self.username, self.password), timeout=1.0)
         except requests.exceptions.Timeout:
             logger.error("Gateway Timeout while FNS login")
             raise ConnectionError("Not able to login in FNS")
