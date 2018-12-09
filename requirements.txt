@@ -3,3 +3,4 @@ Flask==1.0.2
 Flask-HTTPAuth==3.2.4
 Flask-RESTful==0.3.6
 requests==2.20.1
+py-postgresql=1.2.1
