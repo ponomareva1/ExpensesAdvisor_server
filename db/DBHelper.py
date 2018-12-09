@@ -1,4 +1,5 @@
 import postgresql as pg
+from os import listdir
 from db.date.ItemInfo import ItemInfo
 
 CHECKS_TABLE = "\"Checks\""
@@ -7,14 +8,38 @@ ITEMS_TABLE = "\"Items\""
 CATEGORIES_TABLE = "\"Categories\""
 PATTERNS_TABLE = "\"Patterns\""
 
+USER = "postgres"
+PASS = ""
+HOST = "localhost"
+PORT = "5432"
+DB_NAME = "QrCodesDB"
+
+DB_PARAMS = 'pq://' + USER + ':' + PASS + '@' + HOST + ':' + PORT + '/' + DB_NAME
+
+SCRIPTS_PATH = "scripts/"
+SEQ_SCRIPTS_PATH = SCRIPTS_PATH + "seq/"
+TAB_SCRIPTS_PATH = SCRIPTS_PATH + "tables/"
+
 
 # TODO: methods for statistic
 # TODO: methods for waiting chacks
 
+
 class DBHelper:
 
-    def __init__(self):
-        self.db = self.__connect()
+    def __init__(self, local=True, user="", password="", host="", port="", db_name=""):
+        try:
+            if local:
+                try:
+                    self.__create_new_db()
+                    self.db = self.__conect_to_local()
+                except pg.exceptions.ClientCannotConnectError:
+                    print("<INFO>: Attempt to create a new database:\n" + DB_PARAMS)
+                    self.db = self.__create_new_db()
+            else:
+                self.db = self.__connect(user, password, host, port, db_name)
+        except pg.exceptions.ClientCannotConnectError:
+            print("CONNECTION ERROR")
 
     #
     # User API
@@ -91,13 +116,11 @@ class DBHelper:
         # TODO name category must be unique
         self.__insertQuery(CATEGORIES_TABLE, "(name)", "('%s')" % name)
 
-    def __connect(self):
-        USER = "postgres"
-        PASS = ""
-        HOST = "localhost"
-        PORT = "5432"
-        DB_NAME = "QrCodesDB"
-        return pg.open('pq://' + USER + ':' + PASS + '@' + HOST + ':' + PORT + '/' + DB_NAME)
+    def __connect(self, user, password, host, port, db_name):
+        return pg.open('pq://' + user + ':' + password + '@' + host + ':' + port + '/' + db_name)
+
+    def __conect_to_local(self):
+        return self.__connect(USER, PASS, HOST, PORT, DB_NAME)
 
     def __query(self, command, tableName, constraint=""):
         return self.db.query(command + " " + tableName + " " + constraint)
@@ -113,3 +136,15 @@ class DBHelper:
 
     def __selectAllQuery(self, tableName, constraint=""):
         return self.__selectQuery("*", tableName, constraint)
+
+    def __create_new_db(self):
+        connection = pg.open('pq://' + USER + ':' + PASS + '@' + HOST + ':' + PORT)
+        connection.execute("CREATE DATABASE " + DB_NAME)
+        self.__create_in_db(connection, SEQ_SCRIPTS_PATH)
+        self.__create_in_db(connection, TAB_SCRIPTS_PATH)
+
+    def __create_in_db(self, connection, path):
+        file_names = [path + f for f in listdir(path)]
+        scripts = [open(f).read() for f in file_names]
+        for script in scripts:
+            connection.execute(script)
