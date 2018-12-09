@@ -1,5 +1,5 @@
 import postgresql as pg
-from src.date.ItemInfo import ItemInfo
+from db.date.ItemInfo import ItemInfo
 
 CHECKS_TABLE = "\"Checks\""
 USERS_TABLE = "\"Users\""
