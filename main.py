@@ -1,4 +1,5 @@
 import atexit
+import bcrypt
 from datetime import datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -19,7 +20,7 @@ app.register_blueprint(statistics_route)
 
 
 users = {
-    "ponome": "ponome"
+    "ponome": bcrypt.hashpw("ponome".encode(), bcrypt.gensalt())
 }
 
 
@@ -27,11 +28,15 @@ def invalid_input(message):
     return jsonify({'error': 'Invalid input', 'message': message}), 400
 
 
-@auth.get_password
-def get_pw(username):
+@auth.verify_password
+def verify_password(username, password):
     if username in users:
-        return users.get(username)
-    return None
+        # get hashed password of user
+        hashed = users.get(username)
+        # check if received password equals to previously hashed
+        return bcrypt.checkpw(password.encode(), hashed)
+    else:
+        return False
 
 
 @auth.error_handler
