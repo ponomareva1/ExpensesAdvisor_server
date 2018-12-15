@@ -3,9 +3,7 @@ from datetime import datetime
 from flask import request, jsonify
 from flask_restful import fields, marshal
 
-from main import auth, invalid_input
-from routes import statistics_route
-
+from routes.common import auth, invalid_input, statistics_route
 
 categories_statistics_fields = {
     "category": fields.String,

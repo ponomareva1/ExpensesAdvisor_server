@@ -28,7 +28,7 @@ class FNSConnector:
         url = self.base_url + self.paths['login']
 
         try:
-            response = requests.get(url, auth=(self.username, self.password), timeout=10)
+            response = requests.get(url, auth=(self.username, self.password))
         except requests.exceptions.Timeout:
             logger.error("Gateway Timeout while FNS login")
             raise ConnectionError("Not able to login in FNS")
@@ -45,7 +45,7 @@ class FNSConnector:
         url = self.format_url(prepared_url, qrcode)
 
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url)
         except requests.exceptions.Timeout:
             logger.error("Gateway Timeout while request to {}".format(prepared_url))
             raise ConnectionError
@@ -66,8 +66,7 @@ class FNSConnector:
         try:
             response = requests.get(url,
                                     headers={"device-Id": "", "device-os": ""},
-                                    auth=(self.username, self.password),
-                                    timeout=10)
+                                    auth=(self.username, self.password))
         except requests.exceptions.Timeout:
             logger.error("Gateway Timeout while request to {}".format(prepared_url))
             raise ConnectionError

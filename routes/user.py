@@ -1,8 +1,7 @@
 import bcrypt
 from flask import jsonify, request
 
-from main import auth, users, invalid_input
-from routes import user_route
+from routes.common import auth, invalid_input, user_route, users
 from utils.fns import FNSConnector
 
 
@@ -47,3 +46,7 @@ def user_registration():
 
     return jsonify({'message': "Successfully created account."}), 201
 
+
+@user_route.route('/allUsers')
+def user_all_users():
+    return jsonify({'message': list(users.keys())}), 200
