@@ -62,6 +62,9 @@ class DBHelperTest(unittest.TestCase):
         self.assertGreater(len(self.db.categories()), 0)
         self.db.db.query(delete_query)
 
+    # def test_update_category(self):
+
+
     # CHECKS API tests
     def test_add_check(self):
         tmp = datetime.now().__str__()
