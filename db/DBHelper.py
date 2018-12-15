@@ -27,18 +27,12 @@ TAB_SCRIPTS_PATH = SCRIPTS_PATH + "tables/"
 
 class DBHelper:
 
-    def __init__(self, local=True, user="", password="", host="", port="", db_name=""):
+    def __init__(self, user=USER, password=PASS, host=HOST, port=PORT, db_name=DB_NAME):
         try:
-            if local:
-                try:
-                    self.__create_new_db()
-                    self.db = self.__conect_to_local()
-                except pg.exceptions.ClientCannotConnectError:
-                    print("<INFO>: Attempt to create a new database:\n" + DB_PARAMS)
-                    self.db = self.__create_new_db()
-            else:
-                self.db = self.__connect(user, password, host, port, db_name)
+            self.db = self.__connect(user, password, host, port, db_name)
         except pg.exceptions.ClientCannotConnectError:
+            # print("<INFO>: Attempt to create a new database:\n" + DB_PARAMS)
+            # self.db = self.__create_new_db()
             print("CONNECTION ERROR")
 
     #
@@ -54,12 +48,12 @@ class DBHelper:
 
     def userExist(self, login):
         query = """SELECT CASE WHEN EXISTS (
-                                    SELECT *
-                                    FROM %s
-                                    WHERE login = '%s'
-                    )
-                    THEN True
-                    ELSE False END""" % (USERS_TABLE, login)
+                                        SELECT *
+                                        FROM %s
+                                        WHERE login = '%s'
+                        )
+                        THEN True
+                        ELSE False END""" % (USERS_TABLE, login)
         return self.db.query(query)[0][0]
 
     def userId(self, login):
@@ -91,8 +85,8 @@ class DBHelper:
     def itemsInfo(self, checkId):
         columns = "i.name,price,quant,c.name AS category"
         tables = """%s i 
-                    JOIN %s ch ON ch.id = i.id_check 
-                    JOIN %s c ON c.id = i.id_category""" % (ITEMS_TABLE, CHECKS_TABLE, CATEGORIES_TABLE)
+                        JOIN %s ch ON ch.id = i.id_check 
+                        JOIN %s c ON c.id = i.id_category""" % (ITEMS_TABLE, CHECKS_TABLE, CATEGORIES_TABLE)
         constraint = "WHERE ch.id = %d" % checkId
         return ItemInfo(self.__selectQuery(columns, tables, constraint)[0])
 
@@ -118,9 +112,6 @@ class DBHelper:
 
     def __connect(self, user, password, host, port, db_name):
         return pg.open('pq://' + user + ':' + password + '@' + host + ':' + port + '/' + db_name)
-
-    def __conect_to_local(self):
-        return self.__connect(USER, PASS, HOST, PORT, DB_NAME)
 
     def __query(self, command, tableName, constraint=""):
         return self.db.query(command + " " + tableName + " " + constraint)
