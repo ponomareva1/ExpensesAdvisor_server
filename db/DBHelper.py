@@ -19,7 +19,7 @@ class DBHelper:
         except pg.exceptions.ClientCannotConnectError:
             # print("<INFO>: Attempt to create a new database:\n" + DB_PARAMS)
             # self.db = self.__create_new_db()
-            print("CONNECTION ERROR")
+            logger.error("CONNECTION ERROR")
 
     #
     # User API
