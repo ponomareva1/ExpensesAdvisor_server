@@ -1,24 +1,7 @@
 import postgresql as pg
 from os import listdir
-from db.date.ItemInfo import ItemInfo
-
-CHECKS_TABLE = "\"Checks\""
-USERS_TABLE = "\"Users\""
-ITEMS_TABLE = "\"Items\""
-CATEGORIES_TABLE = "\"Categories\""
-PATTERNS_TABLE = "\"Patterns\""
-
-USER = "postgres"
-PASS = ""
-HOST = "localhost"
-PORT = "5432"
-DB_NAME = "QrCodesDB"
-
-DB_PARAMS = 'pq://' + USER + ':' + PASS + '@' + HOST + ':' + PORT + '/' + DB_NAME
-
-SCRIPTS_PATH = "scripts/"
-SEQ_SCRIPTS_PATH = SCRIPTS_PATH + "seq/"
-TAB_SCRIPTS_PATH = SCRIPTS_PATH + "tables/"
+from db.date.ItemInfo import *
+from db.DBConstants import *
 
 
 # TODO: methods for statistic
@@ -41,12 +24,12 @@ class DBHelper:
     def users(self):
         return self.__selectAllQuery(USERS_TABLE)
 
-    def addUser(self, login, password):
+    def add_user(self, login, password):
         # TODO: login&pass checking
         values = "('" + login + "','" + password + "')"
         self.__insertQuery(USERS_TABLE, "(login,password)", values)
 
-    def userExist(self, login):
+    def user_exist(self, login):
         query = """SELECT CASE WHEN EXISTS (
                                         SELECT *
                                         FROM %s
@@ -56,7 +39,7 @@ class DBHelper:
                         ELSE False END""" % (USERS_TABLE, login)
         return self.db.query(query)[0][0]
 
-    def userId(self, login):
+    def user_id(self, login):
         return self.__selectQuery("id", USERS_TABLE, "WHERE login = '%s'" % login)[0][0]
 
     #
@@ -65,24 +48,24 @@ class DBHelper:
     def checks(self):
         return self.__selectAllQuery(CHECKS_TABLE)
 
-    def addCheck(self, specifier, shop, date, login):
+    def add_check(self, specifier, shop, date, login):
         # TODO: specifier must be unique
-        userId = self.userId(login)
+        userId = self.user_id(login)
         self.__insertQuery(CHECKS_TABLE,
                            "(specifier,shop,date,id_user)",
                            "('%s','%s','%s',%d)" % (specifier, shop, date, userId)
                            )
 
-    def getLastChecks(self, n, login):
-        if (not self.userExist(login)):
+    def get_last_checks(self, n, login):
+        if (not self.user_exist(login)):
             raise Exception("User with login '%s' doesn't exist" % login)
-        userId = self.userId(login)
+        userId = self.user_id(login)
         return self.__selectTopQuery(n, CHECKS_TABLE, constraint="WHERE id_user = %d" % userId)
 
     #
     # Items API
     #
-    def itemsInfo(self, checkId):
+    def items_info(self, checkId):
         columns = "i.name,price,quant,c.name AS category"
         tables = """%s i 
                         JOIN %s ch ON ch.id = i.id_check 
@@ -93,22 +76,25 @@ class DBHelper:
     #
     # Category API
     #
-    def updateCategorie(self, checkId, itemId, new_category):
+    def update_category(self, checkId, itemId, new_category):
         # TODO + QUATION: update all such items or only item in this check ???
-        # UPDATE "Items" SET id_category = 6;
-        id = self.categoryId(new_category)
+        id = self.category_id(new_category)
         constraint = """WHERE id_check = %d AND id = %d""" % (checkId, itemId)
         self.__query("UPDATE", ITEMS_TABLE, "SET id_category = " + id)
 
-    def categoryId(self, name):
+    def category_id(self, name):
         return self.__selectQuery("(id)", CATEGORIES_TABLE)[0][0]
 
     def categories(self):
         return self.__selectAllQuery(CATEGORIES_TABLE)
 
-    def addCategory(self, name):
+    def add_category(self, name):
         # TODO name category must be unique
         self.__insertQuery(CATEGORIES_TABLE, "(name)", "('%s')" % name)
+
+    #
+    # Queries
+    #
 
     def __connect(self, user, password, host, port, db_name):
         return pg.open('pq://' + user + ':' + password + '@' + host + ':' + port + '/' + db_name)
