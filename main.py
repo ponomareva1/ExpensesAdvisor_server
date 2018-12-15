@@ -1,6 +1,8 @@
 import atexit
 import bcrypt
 from datetime import datetime
+import os
+import psycopg2
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, make_response, jsonify, Blueprint
@@ -19,6 +21,21 @@ app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 
 main = Blueprint('main', __name__)
+
+
+@main.route('/db')
+def db():
+    DATABASE_URL = os.environ['DATABASE_URL']
+
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM public."Users"')
+    users = cur.fetchone()
+
+    cur.close()
+    conn.close()
+    return jsonify({'message': users}), 201
 
 
 @main.route('/')
