@@ -46,7 +46,8 @@ CREATE TABLE public."Users"
     id bigint NOT NULL DEFAULT nextval('"Users_id_seq"'::regclass),
     login text COLLATE pg_catalog."default" NOT NULL,
     password text COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT "Users_pkey" PRIMARY KEY (id)
+    CONSTRAINT "Users_pkey" PRIMARY KEY (id),
+    UNIQUE (login)
 )
 WITH (
     OIDS = FALSE
@@ -64,7 +65,8 @@ CREATE TABLE public."Categories"
 (
     id bigint NOT NULL DEFAULT nextval('"Categories_id_seq"'::regclass),
     name text COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT "Categories_pkey" PRIMARY KEY (id)
+    CONSTRAINT "Categories_pkey" PRIMARY KEY (id),
+    UNIQUE (name)
 )
 WITH (
     OIDS = FALSE
@@ -85,6 +87,7 @@ CREATE TABLE public."Checks"
     shop text COLLATE pg_catalog."default" NOT NULL,
     date date NOT NULL,
     id_user bigint NOT NULL,
+    UNIQUE (specifier),
     CONSTRAINT "Checks_pkey" PRIMARY KEY (id),
     CONSTRAINT user_fkey FOREIGN KEY (id_user)
         REFERENCES public."Users" (id) MATCH SIMPLE
@@ -137,6 +140,7 @@ CREATE TABLE public."Patterns"
 (
     pattern text COLLATE pg_catalog."default" NOT NULL,
     id_category bigint,
+    UNIQUE (pattern,id_category),
     CONSTRAINT "Patterns_pkey" PRIMARY KEY (pattern),
     CONSTRAINT category_fkey FOREIGN KEY (id_category)
         REFERENCES public."Categories" (id) MATCH SIMPLE
