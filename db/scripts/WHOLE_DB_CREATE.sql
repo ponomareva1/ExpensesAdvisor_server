@@ -156,3 +156,27 @@ TABLESPACE pg_default;
 
 ALTER TABLE public."Patterns"
     OWNER to postgres;
+
+
+-- Table: public."WaitingCodes"
+
+-- DROP TABLE public."WaitingCodes";
+
+CREATE TABLE public."WaitingCodes"
+(
+    user_id bigint NOT NULL,
+    json json NOT NULL,
+    id bigint NOT NULL DEFAULT nextval('"WaitingCodes_id_seq"'::regclass),
+    CONSTRAINT "WaitingCodes_pkey" PRIMARY KEY (id),
+    CONSTRAINT user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public."Users" (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public."WaitingCodes"
+    OWNER to postgres;
