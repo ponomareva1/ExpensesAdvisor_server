@@ -21,8 +21,8 @@ class DBHelperTest(unittest.TestCase):
                                                                                                       p=password))
         delete_query = self.delete_user_pattern.format(l=login, p=password)
         self.db.add_user(login, password)
-        self.assertEqual(True, self.db.connection.query(check_query)[0][0])
-        self.db.connection.query(delete_query)
+        self.assertEqual(True, self.db.query(check_query)[0][0])
+        self.db.query(delete_query)
 
     def test_user_exist(self):
         login = datetime.now().__str__()
@@ -30,7 +30,7 @@ class DBHelperTest(unittest.TestCase):
         delete_query = self.delete_user_pattern.format(l=login, p=password)
         self.db.add_user(login, password)
         self.assertEqual(True, self.db.user_exist(login))
-        self.db.connection.query(delete_query)
+        self.db.query(delete_query)
 
     def test_users(self):
         login = datetime.now().__str__()
@@ -38,7 +38,7 @@ class DBHelperTest(unittest.TestCase):
         delete_query = self.delete_user_pattern.format(l=login, p=password)
         self.db.add_user(login, password)
         self.assertGreater(len(self.db.users()), 0)
-        self.db.connection.query(delete_query)
+        self.db.query(delete_query)
 
     # CATEGORY API Tests
     def test_add_category(self):
@@ -46,16 +46,16 @@ class DBHelperTest(unittest.TestCase):
         self.db.add_category(name)
         check_query = self.check_exists_pattern.format(select_query="""SELECT * FROM "Categories"
                                                                        WHERE name = '{}'""".format(name))
-        self.assertEqual(True, self.db.connection.query(check_query)[0][0])
+        self.assertEqual(True, self.db.query(check_query)[0][0])
         delete_query = self.delete_category_pattern.format(name)
-        self.db.connection.query(delete_query)
+        self.db.query(delete_query)
 
     def test_categories(self):
         name = datetime.now().__str__()
         delete_query = self.delete_category_pattern.format(name)
         self.db.add_category(name)
         self.assertGreater(len(self.db.categories()), 0)
-        self.db.connection.query(delete_query)
+        self.db.query(delete_query)
 
     # def test_update_category(self):
     #     tmp = datetime.now().__str__()
@@ -66,7 +66,7 @@ class DBHelperTest(unittest.TestCase):
     #     item_id = self.db.add_item(tmp, 27, 2, check_id, category_id)
     #     new_category_id = self.db.add_category('not fruit')
     #     #
-    #     select_1 = """SELECT (name,price,quant,id_check) FROM "Items" WHERE id_check = {id} AND name = {n}"""\
+    #     select_1 = """SELECT (name,price,quant,id_check) FROM "Items" WHERE id_check = {id} AND name = {n}""" \
     #         .format(id=check_id, n=tmp)
     #     select_1 = """SELECT * FROM "Items" WHERE id_check = {id} AND name = {n}""".format(id=check_id, n=tmp)
     #     self.db.update_category(check_id, item_id, new_category_id)
@@ -75,8 +75,8 @@ class DBHelperTest(unittest.TestCase):
     #     self.assertNotEqual()
     #     #
     #     # delete
-
-    # CHECKS API tests
+    #
+    # # CHECKS API tests
     def test_add_check(self):
         tmp = datetime.now().__str__()
         check_query = self.check_exists_pattern.format(select_query="""SELECT * FROM "Checks"
@@ -84,9 +84,9 @@ class DBHelperTest(unittest.TestCase):
         self.db.add_user(tmp, tmp)
         user_id = self.db.user_id(tmp)
         self.db.add_check(tmp, tmp, tmp, user_id)
-        self.assertEqual(True, self.db.connection.query(check_query)[0][0])
+        self.assertEqual(True, self.db.query(check_query)[0][0])
         delete_user_query = self.delete_user_pattern.format(l=tmp, p=tmp)  # cascade deleting
-        self.db.connection.query(delete_user_query)
+        self.db.query(delete_user_query)
 
     def test_get_last_checks(self):
         n = 5
@@ -99,7 +99,7 @@ class DBHelperTest(unittest.TestCase):
         result = self.db.get_last_checks(n, login)
         self.assertEqual(len(result), n)
         delete_user_query = self.delete_user_pattern.format(l=login, p=login)  # cascade deleting
-        self.db.connection.query(delete_user_query)
+        self.db.query(delete_user_query)
 
 
 if __name__ == '__main__':

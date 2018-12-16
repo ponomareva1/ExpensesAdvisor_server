@@ -44,7 +44,7 @@ class DBHelper:
                         )
                         THEN True
                         ELSE False END""".format(USERS_TABLE=USERS_TABLE, login=login)
-        return self.__query(query)[0][0]
+        return self.query(query)[0][0]
 
     def user_id(self, login):
         return self.__select_query("id", USERS_TABLE, "WHERE login = '{}'".format(login))[0][0]
@@ -125,7 +125,7 @@ class DBHelper:
                                                                                        passw=password,
                                                                                        host=host))
 
-    def __query(self, query):
+    def query(self, query):
         cursor = self.connection.cursor()
         try:
             cursor.execute(query)
@@ -140,7 +140,7 @@ class DBHelper:
 
     def __query_with_args(self, command, tableName, constraint=""):
         query = command + " " + tableName + " " + constraint
-        return self.__query(query)
+        return self.query(query)
 
     def __insert_query(self, tableName, where, what):
         self.__query_with_args("INSERT INTO", tableName, where + " VALUES " + what)
