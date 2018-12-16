@@ -19,5 +19,6 @@ QRcodes = list()
 categories = {1: "Продукты",
               2: "Услуги"}
 
+
 def invalid_input(message):
-    return jsonify({'error': 'Invalid input', 'message': message}), 400
+    return jsonify({'error': 'Invalid input: {}'.format(message)}), 400
