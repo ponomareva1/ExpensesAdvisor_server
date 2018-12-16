@@ -1,6 +1,7 @@
 import logging
-import postgresql.exceptions
-import postgresql as pg
+# import postgresql.exceptions
+# import postgresql as pg
+import psycopg2 as pg
 from os import listdir
 from db.date.ItemInfo import *
 from db.DBConstants import *
@@ -15,11 +16,12 @@ class DBHelper:
 
     def __init__(self, user=USER, password=PASS, host=HOST, port=PORT, db_name=DB_NAME):
         try:
-            self.db = self.__connect(user, password, host, port, db_name)
-        except pg.exceptions.ClientCannotConnectError:
+            self.connection = self.__connect(user, password, host, port, db_name)
+        except Exception as e:
             # print("<INFO>: Attempt to create a new database:\n" + DB_PARAMS)
             # self.db = self.__create_new_db()
-            logger.error("CONNECTION ERROR")
+            logger.error("CONNECTION ERROR:")
+            logger.error(e)
 
     #
     # User API
@@ -42,7 +44,7 @@ class DBHelper:
                         )
                         THEN True
                         ELSE False END""".format(USERS_TABLE=USERS_TABLE, login=login)
-        return self.db.query(query)[0][0]
+        return self.__query(query)[0][0]
 
     def user_id(self, login):
         return self.__select_query("id", USERS_TABLE, "WHERE login = '{}'".format(login))[0][0]
@@ -97,11 +99,10 @@ class DBHelper:
     #
     # Category API
     #
-    def update_category(self, check_id, item_id, new_category):
+    def update_category(self, check_id, item_id, new_category_id):
         # TODO + QUATION: update all such items or only item in this check ???
-        id = self.category_id(new_category)
         constraint = """WHERE id_check = {check_id} AND id = {item_id}""".format(check_id=check_id, item_id=item_id)
-        self.__query("UPDATE", ITEMS_TABLE, "SET id_category = " + id)
+        self.__query_with_args("UPDATE", ITEMS_TABLE, "SET id_category = {}".format(new_category_id))
 
     def category_id(self, name):
         return self.__select_query("id", CATEGORIES_TABLE)[0][0]
@@ -118,20 +119,34 @@ class DBHelper:
     #
 
     def __connect(self, user, password, host, port, db_name):
-        return pg.open('pq://' + user + ':' + password + '@' + host + ':' + port + '/' + db_name)
+        return pg.connect(
+            "dbname='{db_name}' user='{user}' host='{host}' password='{passw}'".format(db_name=db_name,
+                                                                                       user=user,
+                                                                                       passw=password,
+                                                                                       host=host))
 
-    def __query(self, command, tableName, constraint=""):
-        query = command + " " + tableName + " " + constraint
+    def __query(self, query):
+        cursor = self.connection.cursor()
         try:
-            return self.db.query(query)
-        except pg.exceptions.UniqueError as e:
-            logger.warn("UniqueError : {}".format(query))
+            cursor.execute(query)
+            rows = cursor.fetchall() if cursor.description is not None else None
+            cursor.close()
+            return rows
+        except Exception as e:
+            self.connection.rollback()
+            cursor.close()
+            logger.warn("Error with query : {}".format(query))
+            logger.warn(e)
+
+    def __query_with_args(self, command, tableName, constraint=""):
+        query = command + " " + tableName + " " + constraint
+        return self.__query(query)
 
     def __insert_query(self, tableName, where, what):
-        self.__query("INSERT INTO", tableName, where + " VALUES " + what)
+        self.__query_with_args("INSERT INTO", tableName, where + " VALUES " + what)
 
     def __select_query(self, columns, tableName, constraint=""):
-        return self.__query("SELECT {columns} FROM ".format(columns=columns), tableName, constraint)
+        return self.__query_with_args("SELECT {columns} FROM ".format(columns=columns), tableName, constraint)
 
     def __select_top_query(self, n, tableName, columns="*", constraint=""):
         return self.__select_query(columns, tableName, constraint + "LIMIT {}".format(n))
@@ -140,7 +155,7 @@ class DBHelper:
         return self.__select_query("*", tableName, constraint)
 
     def __create_new_db(self):
-        connection = pg.open('pq://{USER}:{PASS}@{HOST}:{PORT}'.format(USER, PASS, HOST, PORT))
+        connection = pg.open('pq://{user}:{passw}@{host}:{port}'.format(user=USER, passw=PASS, host=HOST, port=PORT))
         connection.execute("CREATE DATABASE " + DB_NAME)
         self.__create_in_db(connection, SEQ_SCRIPTS_PATH)
         self.__create_in_db(connection, TAB_SCRIPTS_PATH)

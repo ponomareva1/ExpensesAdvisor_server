@@ -1,9 +1,9 @@
 class ItemInfo:
     def __init__(self, record):
-        self.name = record['name']
-        self.price = record['price']
-        self.quant = record['quant']
-        self.category = record['category']
+        self.name = record[0]
+        self.price = record[1]
+        self.quant = record[2]
+        self.category = record[3]
 
     def __str__(self) -> str:
         str = "{\n"
