@@ -1,6 +1,4 @@
 import logging
-# import postgresql.exceptions
-# import postgresql as pg
 import psycopg2 as pg
 from os import listdir
 from db.date.ItemInfo import *
@@ -18,8 +16,6 @@ class DBHelper:
         try:
             self.connection = self.__connect(user, password, host, port, db_name)
         except Exception as e:
-            # print("<INFO>: Attempt to create a new database:\n" + DB_PARAMS)
-            # self.db = self.__create_new_db()
             logger.error("CONNECTION ERROR:")
             logger.error(e)
 
@@ -154,14 +150,3 @@ class DBHelper:
     def __select_all_query(self, tableName, constraint=""):
         return self.__select_query("*", tableName, constraint)
 
-    def __create_new_db(self):
-        connection = pg.open('pq://{user}:{passw}@{host}:{port}'.format(user=USER, passw=PASS, host=HOST, port=PORT))
-        connection.execute("CREATE DATABASE " + DB_NAME)
-        self.__create_in_db(connection, SEQ_SCRIPTS_PATH)
-        self.__create_in_db(connection, TAB_SCRIPTS_PATH)
-
-    def __create_in_db(self, connection, path):
-        file_names = [path + f for f in listdir(path)]
-        scripts = [open(f).read() for f in file_names]
-        for script in scripts:
-            connection.execute(script)

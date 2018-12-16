@@ -85,10 +85,12 @@ CREATE TABLE public."Checks"
     id bigint NOT NULL DEFAULT nextval('"Checks_id_seq"'::regclass),
     specifier text COLLATE pg_catalog."default" NOT NULL,
     shop text COLLATE pg_catalog."default" NOT NULL,
-    date date NOT NULL,
+    date timestamp(4) without time zone NOT NULL,
     id_user bigint NOT NULL,
-    UNIQUE (specifier),
+    UNIQUE(specifier),
     CONSTRAINT "Checks_pkey" PRIMARY KEY (id),
+    CONSTRAINT "Checks_specifier_key" UNIQUE (specifier)
+,
     CONSTRAINT user_fkey FOREIGN KEY (id_user)
         REFERENCES public."Users" (id) MATCH SIMPLE
         ON UPDATE CASCADE
