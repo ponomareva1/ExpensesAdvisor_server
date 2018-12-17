@@ -1,7 +1,7 @@
+import bcrypt
 from flask import jsonify, request
 
-from main import auth, users, invalid_input
-from routes import user_route
+from routes.common import auth, invalid_input, user_route, users
 from utils.fns import FNSConnector
 
 
@@ -25,9 +25,10 @@ def user_login():
 
     # request to DB
     if content['username'] not in users:
-        return jsonify({'error': "Forbidden. Authorization information is invalid. No account with this username."}), 403
+        return jsonify({'error': "Forbidden. Authorization information is invalid. "
+                                 "No account with this username."}), 403
     else:
-        if content['password'] != users[content['username']]:
+        if not bcrypt.checkpw(content['password'].encode(), users.get(content['username'])):
             return jsonify({'error': "Forbidden. Invalid password."}), 403
 
     return jsonify({'message': "Successfully logged in."}), 201
@@ -40,7 +41,12 @@ def user_registration():
         return invalid_input("Invalid json format (not all fields are present)")
 
     # request to DB
-    users[content['username']] = content['password']
+    hashed_password = bcrypt.hashpw(content['password'].encode(), bcrypt.gensalt())
+    users[content['username']] = hashed_password
 
     return jsonify({'message': "Successfully created account."}), 201
 
+
+@user_route.route('/allUsers')
+def user_all_users():
+    return jsonify({'message': list(users.keys())}), 200

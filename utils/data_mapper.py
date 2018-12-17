@@ -12,7 +12,13 @@ def parse_check(check_dict):
         items_list.append(item_obj)
 
     date = datetime.strptime(check_dict['dateTime'], '%Y-%m-%dT%H:%M:%S')
-    shop = check_dict['retailPlace'] if 'retailPlace' in check_dict else check_dict['user']
+    if 'retailPlace' in check_dict:
+        shop = check_dict['retailPlace']
+    elif 'user' in check_dict:
+        shop = check_dict['user']
+    else:
+        shop = "Неизвестно"
+
     sum = float(check_dict['totalSum']) / 100
 
     specifier = "{fn}-{fp}-{fd}".format(fn=check_dict['fiscalDriveNumber'],

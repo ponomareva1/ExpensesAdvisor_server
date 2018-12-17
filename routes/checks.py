@@ -1,8 +1,7 @@
 from flask import request, jsonify
 from flask_restful import marshal, fields
 
-from main import auth, checks, invalid_input
-from routes import checks_route
+from routes.common import auth, checks, checks_route, invalid_input
 
 check_fields = {
     'id': fields.Integer,

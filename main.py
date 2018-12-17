@@ -1,49 +1,71 @@
 import atexit
+import bcrypt
 from datetime import datetime
+import os
+import psycopg2
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, make_response, jsonify
+from flask import Flask, make_response, jsonify, Blueprint
 from flask_httpauth import HTTPBasicAuth
 
-from routes import *
+from routes import common
+from routes.common import auth, users
+
+from routes.qr_code import *
+from routes.checks import *
+from routes.items import *
+from routes.user import *
+from routes.statistics import *
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
-auth = HTTPBasicAuth()
 
-app.register_blueprint(qrcode_route)
-app.register_blueprint(checks_route)
-app.register_blueprint(items_route)
-app.register_blueprint(user_route)
-app.register_blueprint(statistics_route)
+main = Blueprint('main', __name__)
 
 
-users = {
-    "ponome": "ponome"
-}
+@main.route('/db')
+def db():
+    DATABASE_URL = os.environ['DATABASE_URL']
+
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM public."Users"')
+    users = cur.fetchone()
+
+    cur.close()
+    conn.close()
+    return jsonify({'message': users}), 201
 
 
-def invalid_input(message):
-    return jsonify({'error': 'Invalid input', 'message': message}), 400
+@main.route('/')
+def index_main():
+    return jsonify({'message': "Successfully tested."}), 201
 
 
-@auth.get_password
-def get_pw(username):
+app.register_blueprint(main)
+app.register_blueprint(common.qrcode_route)
+app.register_blueprint(common.checks_route)
+app.register_blueprint(common.items_route)
+app.register_blueprint(common.user_route)
+app.register_blueprint(common.statistics_route)
+
+
+@auth.verify_password
+def verify_password(username, password):
     if username in users:
-        return users.get(username)
-    return None
+        # get hashed password of user
+        hashed = users.get(username)
+        # check if received password equals to previously hashed
+        return bcrypt.checkpw(password.encode(), hashed)
+    else:
+        return False
 
 
 @auth.error_handler
 def unauthorized():
     # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
     return make_response(jsonify({'message': 'Unauthorized access'}), 401)
-
-
-checks = list()
-QRcodes = list()
-categories = {1: "Продукты",
-              2: "Услуги"}
 
 
 def scheduled_job():
