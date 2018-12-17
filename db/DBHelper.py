@@ -59,7 +59,7 @@ class DBHelper:
         return self.check_id(specifier)
 
     def get_last_checks(self, n, login):
-        if (not self.user_exist(login)):
+        if not self.user_exist(login):
             raise Exception("User with login '{}' doesn't exist".format(login))
         user_id = self.user_id(login)
         return self.__select_top_query(n, CHECKS_TABLE, constraint="WHERE id_user = {}".format(user_id))
@@ -77,12 +77,12 @@ class DBHelper:
                                                                                                 CHECKS_TABLE=CHECKS_TABLE,
                                                                                                 CATEGORIES_TABLE=CATEGORIES_TABLE)
         constraint = "WHERE ch.id = {id}".format(id=check_id)
-        return ItemInfo(self.__select_query(columns, tables, constraint)[0])
+        return self.__select_query(columns, tables, constraint)
 
     # TODO: test for method
     def add_item(self, name, price, quant, check_id, category_id):
         self.__insert_query(ITEMS_TABLE, "(name,price,quant,id_category,id_check)",
-                            "('{name}',{price},{quant},{check_id},{category_id})".format(name=name, price=price,
+                            "('{name}',{price},{quant},{category_id},{check_id})".format(name=name, price=price,
                                                                                          quant=quant, check_id=check_id,
                                                                                          category_id=category_id))
         return self.item_id(name, check_id)
@@ -98,7 +98,7 @@ class DBHelper:
     def update_category(self, check_id, item_id, new_category_id):
         # TODO + QUATION: update all such items or only item in this check ???
         constraint = """WHERE id_check = {check_id} AND id = {item_id}""".format(check_id=check_id, item_id=item_id)
-        self.__query_with_args("UPDATE", ITEMS_TABLE, "SET id_category = {}".format(new_category_id))
+        self.__update_query(ITEMS_TABLE, "id_category = {} ".format(new_category_id), constraint)
 
     def category_id(self, name):
         return self.__select_query("id", CATEGORIES_TABLE)[0][0]
@@ -138,6 +138,9 @@ class DBHelper:
     def __query_with_args(self, command, tableName, constraint=""):
         query = command + " " + tableName + " " + constraint
         return self.query(query)
+
+    def __update_query(self, tableName, set, constraint=""):
+        self.__query_with_args("UPDATE", tableName, " SET " + set + " " + constraint)
 
     def __insert_query(self, tableName, where, what):
         self.__query_with_args("INSERT INTO", tableName, where + " VALUES " + what)
