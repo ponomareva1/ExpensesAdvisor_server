@@ -1,4 +1,6 @@
 import logging
+import os
+
 import psycopg2 as pg
 from os import listdir
 from db.date.ItemInfo import *
@@ -12,9 +14,13 @@ logger = logging.getLogger(__name__)
 
 class DBHelper:
 
-    def __init__(self, user=USER, password=PASS, host=HOST, port=PORT, db_name=DB_NAME):
+    def __init__(self, remote=True, user=USER, password=PASS, host=HOST, port=PORT, db_name=DB_NAME):
         try:
-            self.connection = self.__connect(user, password, host, port, db_name)
+            if remote:
+                database_url = os.environ['DATABASE_URL']
+                self.connection = pg.connect(database_url, sslmode='require')
+            else:
+                self.connection = self.__connect(user, password, host, port, db_name)
         except Exception as e:
             logger.error("CONNECTION ERROR:")
             logger.error(e)
