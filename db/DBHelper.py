@@ -126,6 +126,7 @@ class DBHelper:
         try:
             cursor.execute(query)
             rows = cursor.fetchall() if cursor.description is not None else None
+            self.connection.commit()
             cursor.close()
             return rows
         except Exception as e:
