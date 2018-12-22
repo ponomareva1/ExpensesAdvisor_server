@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from flask_restful import fields, marshal
 
+from db.DBHelper import DBHelper
 from routes.common import auth, checks, invalid_input, items_route, categories
 
 item_fields = {
@@ -66,8 +67,6 @@ def update_items_category():
 @auth.login_required
 def get_categories():
     # request to DB
-    categories_list = list()
-    for k, v in categories.items():
-        categories_list.append(v)
-
+    db_helper = DBHelper()
+    categories_list = db_helper.categories()
     return jsonify({'categories': categories_list}), 200

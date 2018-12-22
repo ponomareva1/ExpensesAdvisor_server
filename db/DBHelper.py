@@ -127,7 +127,13 @@ class DBHelper:
         return self.__select_query("id", CATEGORIES_TABLE, "WHERE name = '{name}'".format(name=name))[0][0]
 
     def categories(self):
-        return self.__select_all_query(CATEGORIES_TABLE)
+        categories = self.__select_all_query(CATEGORIES_TABLE)
+
+        categories_list = list()
+        for category in categories:
+            categories_list.append(category[1])
+
+        return categories_list
 
     def add_category(self, name):
         self.__insert_query(CATEGORIES_TABLE, "(name)", "('{}')".format(name))
