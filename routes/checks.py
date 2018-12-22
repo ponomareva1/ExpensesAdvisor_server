@@ -1,13 +1,14 @@
 from flask import request, jsonify
 from flask_restful import marshal, fields
 
-from routes.common import auth, checks, checks_route, invalid_input
+from db.DBHelper import DBHelper
+from routes.common import auth, checks_route, invalid_input
 
 check_fields = {
     'id': fields.Integer,
     'date': fields.DateTime(dt_format='iso8601'),
     'shop': fields.String,
-    'sum': fields.Float
+    # 'sum': fields.Float
 }
 
 
@@ -22,9 +23,11 @@ def get_recent_checks():
     if not num > 0:
         return invalid_input("Parameter 'num' must be larger than 0.")
 
+    db_helper = DBHelper()
+    checks = db_helper.get_last_checks(num, auth.username())
     checks_list = list()
-    for check in checks[-num:]:
-        marshalled_check = marshal(vars(check), check_fields)
+    for check in checks:
+        marshalled_check = marshal(check, check_fields)
         checks_list.append(marshalled_check)
 
     return jsonify({'checks': checks_list}), 200

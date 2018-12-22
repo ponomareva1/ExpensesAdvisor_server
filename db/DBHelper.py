@@ -71,7 +71,10 @@ class DBHelper:
         if not self.user_exist(login):
             raise Exception("User with login '{}' doesn't exist".format(login))
         user_id = self.user_id(login)
-        return self.__select_top_query(n, CHECKS_TABLE, constraint="WHERE id_user = {}".format(user_id))
+        checks = self.__select_top_query(n, CHECKS_TABLE, constraint="WHERE id_user = {}".format(user_id))
+
+        fields = ['id', 'specifier', 'shop', 'date', 'user_id']
+        return [dict(zip(fields, check)) for check in checks]
 
     def check_id(self, specifier):
         return self.__select_query("id", CHECKS_TABLE, "WHERE specifier = '{}'".format(specifier))[0][0]
