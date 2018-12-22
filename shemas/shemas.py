@@ -15,32 +15,20 @@ class Category:
 
 class Item:
     def __init__(self, name, price, quantity, id=None, category=None):
-        from random import randint  # tmp while no DB added
-        if not id:
-            self.id = randint(0, 100)
-        else:
-            self.id = id  # ID чека
+        self.id = id  # ID чека
         self.name = name  # Полное наименование товара
         self.price = price  # Цена
         self.quantity = quantity  # Количество / вес товара в кг
-        if not category:  # Если у товара нет категории
-            self.category = "Продукты"
-        else:
-            # self.category = vars(category)  # dict полей объекта Category
-            self.category = category  # Наименование категории
+        self.category = category  # Наименование категории
 
 
 class Check:
     def __init__(self, date, shop, sum, items, specifier, id=None):
-        from random import randint
-        if not id:
-            self.id = randint(0, 100)
-        else:
-            self.id = id  # ID чека
+        self.id = id  # ID чека
         self.date = date  # Дата совершения покупки
         self.shop = shop  # Магазин, в котором совершили покупку
         self.sum = sum  # Полная сумма
-        self.items = items  # Список dict полей объекта Item
+        self.items = items  # Список объектов Item
         self.specifier = specifier  # Специфичный идентификатор чека ({fn}-{fp}-{fd})
 
 

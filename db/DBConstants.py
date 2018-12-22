@@ -3,6 +3,7 @@ USERS_TABLE = "\"Users\""
 ITEMS_TABLE = "\"Items\""
 CATEGORIES_TABLE = "\"Categories\""
 PATTERNS_TABLE = "\"Patterns\""
+WAITING_CHECKS_TABLE = "\"WaitingChecks\""
 
 USER = "postgres"
 PASS = ""

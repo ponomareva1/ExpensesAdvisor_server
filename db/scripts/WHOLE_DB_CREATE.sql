@@ -37,6 +37,16 @@ ALTER SEQUENCE public."Items_id_seq"
     OWNER TO postgres;
 
 
+-- SEQUENCE: public."WaitingCodes_id_seq"
+
+-- DROP SEQUENCE public."WaitingCodes_id_seq";
+
+CREATE SEQUENCE public."WaitingCodes_id_seq";
+
+ALTER SEQUENCE public."WaitingCodes_id_seq"
+    OWNER TO postgres;
+
+
 -- Table: public."Users"
 
 -- DROP TABLE public."Users";

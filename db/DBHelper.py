@@ -25,6 +25,9 @@ class DBHelper:
             logger.error("CONNECTION ERROR:")
             logger.error(e)
 
+    def close_connection(self):
+        self.connection.close()
+
     #
     # User API
     #
@@ -32,8 +35,6 @@ class DBHelper:
         return self.__select_all_query(USERS_TABLE)
 
     def add_user(self, login, password):
-        # TODO: login&pass checking
-
         values = "('{login}','{password}')".format(login=login, password=password)
         self.__insert_query(USERS_TABLE, "(login,password)", values)
         return self.user_id(login)
@@ -117,9 +118,23 @@ class DBHelper:
         return self.category_id(name)
 
     #
+    # WaitingCodes API
+    #
+    def waiting_codes(self):
+        return self.__select_all_query(WAITING_CHECKS_TABLE)
+
+    def add_waiting_code(self, user_id, json):
+        self.__insert_query(WAITING_CHECKS_TABLE,
+                            "(json,id_user)",
+                            "('{json}',{user_id})".format(json=json, user_id=user_id))
+        return self.check_id(json)
+
+    def waiting_code_id(self, json):
+        return self.__select_query("id", WAITING_CHECKS_TABLE, "WHERE json = '{}'".format(json))[0][0]
+
+    #
     # Queries
     #
-
     def __connect(self, user, password, host, port, db_name):
         return pg.connect(
             "dbname='{db_name}' user='{user}' host='{host}' password='{passw}'".format(db_name=db_name,
