@@ -1,13 +1,9 @@
 import atexit
 import bcrypt
-import os
-import psycopg2
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, make_response, jsonify, Blueprint
-from flask_httpauth import HTTPBasicAuth
 
-from db.DBHelper import DBHelper
 from routes import common
 from routes.common import auth
 from routes.qr_code import *
