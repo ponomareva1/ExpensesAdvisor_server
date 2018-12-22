@@ -38,6 +38,9 @@ class DBHelper:
         self.__insert_query(USERS_TABLE, "(login,password)", values)
         return self.user_id(login)
 
+    def user_login(self, user_id):
+        return self.__select_query("login", USERS_TABLE, "WHERE id = '{}'".format(user_id))[0][0]
+
     def user_password(self, login):
         return self.__select_query("password", USERS_TABLE, "WHERE login = '{}'".format(login))[0][0]
 
@@ -146,18 +149,18 @@ class DBHelper:
     # WaitingCodes API
     #
     def waiting_codes(self):
-        waiting_codes = self.__select_query("json", WAITING_CODES_TABLE)
-        return [item[0] for item in waiting_codes]
+        waiting_codes = self.__select_all_query(WAITING_CODES_TABLE)
+        fields = ['user_id', 'json', 'id']
+        return [dict(zip(fields, waiting_code)) for waiting_code in waiting_codes]
 
     def add_waiting_code(self, login, json):
         user_id = self.user_id(login)
         self.__insert_query(WAITING_CODES_TABLE,
-                            "(json,id_user)",
+                            "(json,user_id)",
                             "('{json}',{user_id})".format(json=json, user_id=user_id))
-        return self.check_id(json)
 
-    def waiting_code_id(self, json):
-        return self.__select_query("id", WAITING_CODES_TABLE, "WHERE json = '{}'".format(json))[0][0]
+    def delete_waiting_code(self, id):
+        self.__delete_query(WAITING_CODES_TABLE, "id = {}".format(id))
 
     #
     # Queries
@@ -193,6 +196,9 @@ class DBHelper:
 
     def __insert_query(self, table_name, where, what):
         self.__query_with_args("INSERT INTO", table_name, where + " VALUES " + what)
+
+    def __delete_query(self, table_name, where):
+        self.__query_with_args("DELETE FROM", table_name, "WHERE {}".format(where))
 
     def __select_query(self, columns, table_name, constraint=""):
         return self.__query_with_args("SELECT {columns} FROM ".format(columns=columns), table_name, constraint)

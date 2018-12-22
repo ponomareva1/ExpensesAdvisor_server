@@ -51,7 +51,7 @@ def send_qrcode():
         check = fns_connector.get_check(qrcode)
         if check is None:
             # add json to WaitingCodes table
-            json = str(vars(qrcode))
+            json = str(vars(qrcode)).replace('\'', '\"')
             db_helper.add_waiting_code(json=json, login=auth.username())
 
             return jsonify({'message': "Check is not ready, added to waiting list."}), 202
@@ -73,3 +73,39 @@ def send_qrcode():
     return jsonify({'message': "Check added to DB.",
                     'check': marshal(vars(check), check_fields),
                     'QRcode': marshal(vars(qrcode), QRcode_fields)}), 201
+
+
+def scheduled_job():
+    print("Running scheduled job")
+    db_helper = DBHelper()
+    for waiting_code in db_helper.waiting_codes():
+        print(waiting_code['json'])
+        json = waiting_code['json']
+        qrcode = QRcode(t=json['t'], fn=json['fn'], fp=json['fp'], fd=json['fd'], s=json['s'])
+        fns_connector = FNSConnector()
+        db_helper = DBHelper()
+        try:
+            check = fns_connector.get_check(qrcode)
+            print(check)
+            if check is not None:
+                check = parse_check(check)
+                # add check and its items to DB
+                if not db_helper.check_unique(check.specifier):
+                    db_helper.delete_waiting_code(waiting_code['id'])
+                    return
+
+                username = db_helper.user_login(waiting_code['user_id'])
+                check.id = db_helper.add_check(specifier=check.specifier,
+                                               shop=check.shop,
+                                               date=check.date,
+                                               login=username)
+                print("Check added")
+                for item in check.items:
+                    db_helper.add_item(name=item.name, price=item.price, quant=item.quantity, check_id=check.id,
+                                       category_id=1)
+                print("Items added")
+
+                db_helper.delete_waiting_code(waiting_code['id'])
+                print("Waiting check deleted")
+        except ConnectionError:
+            return

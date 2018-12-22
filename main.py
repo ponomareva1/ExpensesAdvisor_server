@@ -1,6 +1,5 @@
 import atexit
 import bcrypt
-from datetime import datetime
 import os
 import psycopg2
 
@@ -23,24 +22,9 @@ app.config['JSON_SORT_KEYS'] = False
 main = Blueprint('main', __name__)
 
 
-@main.route('/db')
-def db():
-    DATABASE_URL = os.environ['DATABASE_URL']
-
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-    cur = conn.cursor()
-
-    cur.execute('SELECT * FROM public."Users"')
-    users = cur.fetchone()
-
-    cur.close()
-    conn.close()
-    return jsonify({'message': users}), 201
-
-
 @main.route('/')
 def index_main():
-    return jsonify({'message': "Successfully tested."}), 201
+    return jsonify({'message': "I am alive!."}), 201
 
 
 app.register_blueprint(main)
@@ -69,10 +53,6 @@ def verify_password(username, password):
 def unauthorized():
     # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
     return make_response(jsonify({'message': 'Unauthorized access'}), 401)
-
-
-def scheduled_job():
-    print(datetime.now())
 
 
 @app.before_first_request
