@@ -76,17 +76,14 @@ def send_qrcode():
 
 
 def scheduled_job():
-    print("Running scheduled job")
     db_helper = DBHelper()
     for waiting_code in db_helper.waiting_codes():
-        print(waiting_code['json'])
         json = waiting_code['json']
         qrcode = QRcode(t=json['t'], fn=json['fn'], fp=json['fp'], fd=json['fd'], s=json['s'])
         fns_connector = FNSConnector()
         db_helper = DBHelper()
         try:
             check = fns_connector.get_check(qrcode)
-            print(check)
             if check is not None:
                 check = parse_check(check)
                 # add check and its items to DB
@@ -99,13 +96,10 @@ def scheduled_job():
                                                shop=check.shop,
                                                date=check.date,
                                                login=username)
-                print("Check added")
                 for item in check.items:
                     db_helper.add_item(name=item.name, price=item.price, quant=item.quantity, check_id=check.id,
                                        category_id=1)
-                print("Items added")
 
                 db_helper.delete_waiting_code(waiting_code['id'])
-                print("Waiting check deleted")
         except ConnectionError:
             return
