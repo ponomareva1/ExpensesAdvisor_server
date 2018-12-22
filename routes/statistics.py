@@ -1,9 +1,8 @@
-from datetime import datetime
-
-from flask import request, jsonify
+from flask import jsonify
 from flask_restful import fields, marshal
 
-from routes.common import auth, invalid_input, statistics_route
+from db.DBHelper import DBHelper
+from routes.common import auth, statistics_route
 
 categories_statistics_fields = {
     "category": fields.String,
@@ -15,47 +14,14 @@ daily_statistics_fields = {
     "sum": fields.Float
 }
 
-example_categories_statistics = {
-    "statistics": [
-        {
-            "category": "Продукты",
-            "sum": 100.2
-        },
-        {
-            "category": "Услуги",
-            "sum": 500.5
-        }
-    ]
-}
-
-example_daily_statistics = {
-    "statistics": [
-        {
-            "day": datetime.strptime("2018-11-30T14:35:14", '%Y-%m-%dT%H:%M:%S'),
-            "sum": 666.66
-        },
-        {
-            "day": datetime.strptime("2018-12-31T12:00:00", '%Y-%m-%dT%H:%M:%S'),
-            "sum": 42
-        }
-    ]
-}
-
 
 @statistics_route.route('/statistics/categories', methods=['GET'])
 @auth.login_required
 def get_categories_statistics():
-    days = request.args.get('days')
-    try:
-        days = 30 if not days else int(days)
-    except ValueError:
-        return invalid_input("Parameter 'days' must be an integer")
-    if not days > 0:
-        return invalid_input("Parameter 'days' must be larger than 0.")
-
-    # request to DB
+    db_helper = DBHelper()
+    categories_statistics = db_helper.statistics_categories(auth.username())
     categories_statistics_list = list()
-    for item in example_categories_statistics['statistics']:
+    for item in categories_statistics:
         marshalled_item = marshal(item, categories_statistics_fields)
         categories_statistics_list.append(marshalled_item)
 
@@ -65,17 +31,10 @@ def get_categories_statistics():
 @statistics_route.route('/statistics/daily', methods=['GET'])
 @auth.login_required
 def get_daily_statistics():
-    days = request.args.get('days')
-    try:
-        days = 30 if not days else int(days)
-    except ValueError:
-        return invalid_input("Parameter 'days' must be an integer")
-    if not days > 0:
-        return invalid_input("Parameter 'days' must be larger than 0.")
-
-    # request to DB
+    db_helper = DBHelper()
+    daily_statistics = db_helper.statistics_daily(auth.username())
     daily_statistics_list = list()
-    for item in example_daily_statistics['statistics']:
+    for item in daily_statistics:
         marshalled_item = marshal(item, daily_statistics_fields)
         daily_statistics_list.append(marshalled_item)
 

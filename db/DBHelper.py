@@ -4,7 +4,6 @@ import os
 import psycopg2 as pg
 from db.DBConstants import *
 
-# TODO: methods for statistic
 
 logger = logging.getLogger(__name__)
 
@@ -161,6 +160,43 @@ class DBHelper:
 
     def delete_waiting_code(self, id):
         self.__delete_query(WAITING_CODES_TABLE, "id = {}".format(id))
+
+    #
+    # Categories API
+    #
+    def statistics_categories(self, login):
+        user_id = self.user_id(login)
+        columns = "c.name category, sum(i.price) as sum"
+        tables = """{ITEMS_TABLE} i JOIN {CHECKS_TABLE} ch ON ch.id = i.id_check 
+                        JOIN {CATEGORIES_TABLE} c ON c.id = i.id_category""". \
+            format(ITEMS_TABLE=ITEMS_TABLE,
+                   CHECKS_TABLE=CHECKS_TABLE,
+                   CATEGORIES_TABLE=CATEGORIES_TABLE)
+
+        constraint = """WHERE ch.id_user = {id} 
+                        GROUP BY c.name""".format(id=user_id)
+        statistics = self.__select_query(columns, tables, constraint)
+        fields = ['category', 'sum']
+        return [dict(zip(fields, statistic)) for statistic in statistics]
+
+    def statistics_daily(self, login):
+        user_id = self.user_id(login)
+        query = """
+                WITH
+                  days AS (
+                      SELECT generate_series(current_date-30, current_date+1, '1d')::date AS day
+                  ),
+                  checks AS (
+                      SELECT * FROM public."Checks" ch WHERE ch.id_user = {user_id}
+                  )
+                SELECT days.day as day, CASE WHEN sum(i.price) is NULL THEN 0 ELSE sum(i.price) END AS sum
+                FROM days LEFT JOIN checks ch on days.day = ch.date::date
+                  LEFT JOIN public."Items" i on ch.id = i.id_check 
+                GROUP BY days.day ORDER BY days.day
+        """.format(user_id=user_id)
+        statistics = self.query(query)
+        fields = ['day', 'sum']
+        return [dict(zip(fields, statistic)) for statistic in statistics]
 
     #
     # Queries
