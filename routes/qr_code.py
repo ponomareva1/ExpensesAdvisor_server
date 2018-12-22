@@ -60,6 +60,9 @@ def send_qrcode():
 
     check = parse_check(check)
     # add check and its items to DB
+    if not db_helper.check_unique(check.specifier):
+        return jsonify({'error': "Check already exist in DB."}), 406
+
     check.id = db_helper.add_check(specifier=check.specifier,
                                    shop=check.shop,
                                    date=check.date,

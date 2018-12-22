@@ -81,6 +81,9 @@ class DBHelper:
     def check_exist(self, check_id):
         return self.__check_if_exist(CHECKS_TABLE, "id", check_id)
 
+    def check_unique(self, check_specifier):
+        return not self.__check_if_exist(CHECKS_TABLE, "specifier", check_specifier)
+
     #
     # Items API
     #
@@ -143,17 +146,18 @@ class DBHelper:
     # WaitingCodes API
     #
     def waiting_codes(self):
-        return self.__select_all_query(WAITING_CHECKS_TABLE)
+        waiting_codes = self.__select_query("json", WAITING_CODES_TABLE)
+        return [item[0] for item in waiting_codes]
 
     def add_waiting_code(self, login, json):
         user_id = self.user_id(login)
-        self.__insert_query(WAITING_CHECKS_TABLE,
+        self.__insert_query(WAITING_CODES_TABLE,
                             "(json,id_user)",
                             "('{json}',{user_id})".format(json=json, user_id=user_id))
         return self.check_id(json)
 
     def waiting_code_id(self, json):
-        return self.__select_query("id", WAITING_CHECKS_TABLE, "WHERE json = '{}'".format(json))[0][0]
+        return self.__select_query("id", WAITING_CODES_TABLE, "WHERE json = '{}'".format(json))[0][0]
 
     #
     # Queries
