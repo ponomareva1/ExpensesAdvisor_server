@@ -54,8 +54,7 @@ app.register_blueprint(common.statistics_route)
 @auth.verify_password
 def verify_password(username, password):
     db_helper = DBHelper()
-    user_exist = db_helper.user_exist(username)
-    if user_exist:
+    if db_helper.user_exist(username):
         hashed_password = db_helper.user_password(username)
         try:
             match = bcrypt.checkpw(password.encode(), hashed_password.encode())

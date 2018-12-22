@@ -26,10 +26,8 @@ def user_login():
     login = content['username']
     password = content['password']
 
-    # request to DB
     db_helper = DBHelper()
-    user_exist = db_helper.user_exist(login)
-    if not user_exist:
+    if not db_helper.user_exist(login):
         return jsonify({'error': "Forbidden. Authorization information is invalid. "
                                  "No account with this username."}), 403
     else:
@@ -53,7 +51,6 @@ def user_registration():
     password = content['password']
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
-    # request to DB
     db_helper = DBHelper()
     if db_helper.user_exist(login):
         return jsonify({'error': "Forbidden. An account with this username already exists."}), 406

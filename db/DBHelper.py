@@ -22,7 +22,7 @@ class DBHelper:
             logger.error("CONNECTION ERROR:")
             logger.error(e)
 
-    def close_connection(self):
+    def __del__(self):
         self.connection.close()
 
     #
@@ -38,21 +38,14 @@ class DBHelper:
         self.__insert_query(USERS_TABLE, "(login,password)", values)
         return self.user_id(login)
 
-    def user_exist(self, login):
-        query = """SELECT CASE WHEN EXISTS (
-                                        SELECT *
-                                        FROM {USERS_TABLE}
-                                        WHERE login = '{login}'
-                        )
-                        THEN True
-                        ELSE False END""".format(USERS_TABLE=USERS_TABLE, login=login)
-        return self.query(query)[0][0]
-
     def user_password(self, login):
         return self.__select_query("password", USERS_TABLE, "WHERE login = '{}'".format(login))[0][0]
 
     def user_id(self, login):
         return self.__select_query("id", USERS_TABLE, "WHERE login = '{}'".format(login))[0][0]
+
+    def user_exist(self, login):
+        return self.__check_if_exist(USERS_TABLE, "login", login)
 
     #
     # Checks API
@@ -85,22 +78,24 @@ class DBHelper:
     def check_id(self, specifier):
         return self.__select_query("id", CHECKS_TABLE, "WHERE specifier = '{}'".format(specifier))[0][0]
 
+    def check_exist(self, check_id):
+        return self.__check_if_exist(CHECKS_TABLE, "id", check_id)
+
     #
     # Items API
     #
     def items_info(self, check_id):
-        columns = "i.name,price,quant,c.name AS category"
+        columns = "i.id,i.name,price,quant,c.name AS category"
         tables = """{ITEMS_TABLE} i JOIN {CHECKS_TABLE} ch ON ch.id = i.id_check 
                                     JOIN {CATEGORIES_TABLE} c ON c.id = i.id_category""". \
             format(ITEMS_TABLE=ITEMS_TABLE,
                    CHECKS_TABLE=CHECKS_TABLE,
                    CATEGORIES_TABLE=CATEGORIES_TABLE)
         constraint = "WHERE ch.id = {id}".format(id=check_id)
-        return self.__select_query(columns, tables, constraint)
+        items = self.__select_query(columns, tables, constraint)
 
-    def items_sum(self, check_id):
-        return self.__select_query("sum(price)", ITEMS_TABLE,
-                                   "WHERE id_check = {check_id}".format(check_id=check_id))[0][0]
+        fields = ['id', 'name', 'price', 'quantity', 'category']
+        return [dict(zip(fields, item)) for item in items]
 
     # TODO: test for method
     def add_item(self, name, price, quant, check_id, category_id):
@@ -115,12 +110,14 @@ class DBHelper:
                                                       "AND id_check = {check_id}".format(name=name,
                                                                                          check_id=check_id))[0][0]
 
+    def item_exist(self, item_id):
+        return self.__check_if_exist(ITEMS_TABLE, "id", item_id)
+
     #
     # Category API
     #
-    def update_category(self, check_id, item_id, new_category_id):
-        # TODO + QUATION: update all such items or only item in this check ???
-        constraint = """WHERE id_check = {check_id} AND id = {item_id}""".format(check_id=check_id, item_id=item_id)
+    def update_category(self, item_id, new_category_id):
+        constraint = """WHERE id = {item_id}""".format(item_id=item_id)
         self.__update_query(ITEMS_TABLE, "id_category = {} ".format(new_category_id), constraint)
 
     def category_id(self, name):
@@ -138,6 +135,9 @@ class DBHelper:
     def add_category(self, name):
         self.__insert_query(CATEGORIES_TABLE, "(name)", "('{}')".format(name))
         return self.category_id(name)
+
+    def category_exist(self, category_name):
+        return self.__check_if_exist(CATEGORIES_TABLE, "name", category_name)
 
     #
     # WaitingCodes API
@@ -198,3 +198,13 @@ class DBHelper:
 
     def __select_all_query(self, table_name, constraint=""):
         return self.__select_query("*", table_name, constraint)
+
+    def __check_if_exist(self, table_name, field, field_data):
+        query = """SELECT CASE WHEN EXISTS (
+                                            SELECT *
+                                            FROM {table_name}
+                                            WHERE {field} = '{field_data}'
+                                )
+                                THEN True
+                                ELSE False END""".format(table_name=table_name, field=field, field_data=field_data)
+        return self.query(query)[0][0]

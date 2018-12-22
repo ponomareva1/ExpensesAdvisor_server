@@ -2,7 +2,7 @@ from flask import jsonify, request
 from flask_restful import fields, marshal
 
 from db.DBHelper import DBHelper
-from routes.common import auth, checks, invalid_input, items_route, categories
+from routes.common import auth, invalid_input, items_route
 
 item_fields = {
     'id': fields.Integer,
@@ -19,17 +19,15 @@ def get_items_from_check(check_id):
     if not check_id > 0:
         return invalid_input("Check ID must be an integer and larger than 0.")
 
-    items = list()
-    for check in checks:
-        if check.id == check_id:
-            items = check.items
+    db_helper = DBHelper()
 
-    if not items:
-        return jsonify({"error": "Check with the specified ID was not found."}), 404
+    if not db_helper.check_exist(check_id):
+        return jsonify({"error": "Check with ID={} was not found.".format(check_id)}), 404
 
+    items = db_helper.items_info(check_id)
     items_list = list()
     for item in items:
-        marshalled_item = marshal(vars(item), item_fields)
+        marshalled_item = marshal(item, item_fields)
         items_list.append(marshalled_item)
 
     return jsonify({'items': items_list}), 200
@@ -49,16 +47,18 @@ def update_items_category():
     if not isinstance(category, str):
         return invalid_input("Category must be a string.")
 
-    # request to DB
-    for id in ids:
-        updated = False
-        for check in checks:
-            for item in check.items:
-                if item.id == id:
-                    item.category = category
-                    updated = True
-        if not updated:
-            return jsonify({'error': "Item with the ID={} was not found.".format(id)}), 404
+    db_helper = DBHelper()
+    if not db_helper.category_exist(category_name=category):
+        return jsonify({'error': "Category with the name={} was not found.".format(category)}), 404
+    new_category_id = db_helper.category_id(category)
+
+    # check that all item IDs are correct
+    for item_id in ids:
+        if not db_helper.item_exist(item_id):
+            return jsonify({'error': "Item with the ID={} was not found.".format(item_id)}), 404
+
+    for item_id in ids:
+        db_helper.update_category(item_id=item_id, new_category_id=new_category_id)
 
     return jsonify({'message': "Items category updated."}), 200
 
@@ -66,7 +66,6 @@ def update_items_category():
 @items_route.route('/categories', methods=['GET'])
 @auth.login_required
 def get_categories():
-    # request to DB
     db_helper = DBHelper()
     categories_list = db_helper.categories()
     return jsonify({'categories': categories_list}), 200
