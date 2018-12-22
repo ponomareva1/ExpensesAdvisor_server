@@ -8,7 +8,7 @@ check_fields = {
     'id': fields.Integer,
     'date': fields.DateTime(dt_format='iso8601'),
     'shop': fields.String,
-    # 'sum': fields.Float
+    'sum': fields.Float
 }
 
 
@@ -24,7 +24,7 @@ def get_recent_checks():
         return invalid_input("Parameter 'num' must be larger than 0.")
 
     db_helper = DBHelper()
-    checks = db_helper.get_last_checks(num, auth.username())
+    checks = db_helper.get_last_checks(limit=num, login=auth.username())
     checks_list = list()
     for check in checks:
         marshalled_check = marshal(check, check_fields)

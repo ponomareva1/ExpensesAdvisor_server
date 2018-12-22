@@ -60,20 +60,26 @@ class DBHelper:
     def checks(self):
         return self.__select_all_query(CHECKS_TABLE)
 
-    def add_check(self, specifier, shop, date, user_id):
+    def add_check(self, specifier, shop, date, login):
+        user_id = self.user_id(login)
         self.__insert_query(CHECKS_TABLE,
                             "(specifier,shop,date,id_user)",
                             "('{specifier}','{shop}','{date}',{user_id})".format(specifier=specifier, shop=shop,
                                                                                  date=date, user_id=user_id))
         return self.check_id(specifier)
 
-    def get_last_checks(self, n, login):
-        if not self.user_exist(login):
-            raise Exception("User with login '{}' doesn't exist".format(login))
+    def get_last_checks(self, limit, login):
         user_id = self.user_id(login)
-        checks = self.__select_top_query(n, CHECKS_TABLE, constraint="WHERE id_user = {}".format(user_id))
+        columns = "ch.id, ch.shop, ch.date, ch.id_user, sum(i.price) as sum"
+        tables = "{CHECKS_TABLE} ch JOIN {ITEMS_TABLE} i ON ch.id = i.id_check".format(ITEMS_TABLE=ITEMS_TABLE,
+                                                                                       CHECKS_TABLE=CHECKS_TABLE)
+        constraint = """WHERE ch.id_user = {user_id}
+                        GROUP BY ch.id, ch.shop, ch.date, ch.id_user
+                        LIMIT {limit}
+                        """.format(user_id=user_id, limit=limit)
+        checks = self.__select_query(columns, tables, constraint)
 
-        fields = ['id', 'specifier', 'shop', 'date', 'user_id']
+        fields = ['id', 'shop', 'date', 'user_id', 'sum']
         return [dict(zip(fields, check)) for check in checks]
 
     def check_id(self, specifier):
@@ -91,6 +97,10 @@ class DBHelper:
                    CATEGORIES_TABLE=CATEGORIES_TABLE)
         constraint = "WHERE ch.id = {id}".format(id=check_id)
         return self.__select_query(columns, tables, constraint)
+
+    def items_sum(self, check_id):
+        return self.__select_query("sum(price)", ITEMS_TABLE,
+                                   "WHERE id_check = {check_id}".format(check_id=check_id))[0][0]
 
     # TODO: test for method
     def add_item(self, name, price, quant, check_id, category_id):
@@ -114,7 +124,7 @@ class DBHelper:
         self.__update_query(ITEMS_TABLE, "id_category = {} ".format(new_category_id), constraint)
 
     def category_id(self, name):
-        return self.__select_query("id", CATEGORIES_TABLE)[0][0]
+        return self.__select_query("id", CATEGORIES_TABLE, "WHERE name = '{name}'".format(name=name))[0][0]
 
     def categories(self):
         return self.__select_all_query(CATEGORIES_TABLE)
@@ -129,7 +139,8 @@ class DBHelper:
     def waiting_codes(self):
         return self.__select_all_query(WAITING_CHECKS_TABLE)
 
-    def add_waiting_code(self, user_id, json):
+    def add_waiting_code(self, login, json):
+        user_id = self.user_id(login)
         self.__insert_query(WAITING_CHECKS_TABLE,
                             "(json,id_user)",
                             "('{json}',{user_id})".format(json=json, user_id=user_id))
@@ -176,8 +187,8 @@ class DBHelper:
     def __select_query(self, columns, table_name, constraint=""):
         return self.__query_with_args("SELECT {columns} FROM ".format(columns=columns), table_name, constraint)
 
-    def __select_top_query(self, n, table_name, columns="*", constraint=""):
-        return self.__select_query(columns, table_name, constraint + "LIMIT {}".format(n))
+    # def __select_top_query(self, n, table_name, columns="*", constraint=""):
+    #     return self.__select_query(columns, table_name, constraint + "LIMIT {}".format(n))
 
     def __select_all_query(self, table_name, constraint=""):
         return self.__select_query("*", table_name, constraint)

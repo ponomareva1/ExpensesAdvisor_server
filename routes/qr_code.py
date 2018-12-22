@@ -51,9 +51,8 @@ def send_qrcode():
         check = fns_connector.get_check(qrcode)
         if check is None:
             # add json to WaitingCodes table
-            user_id = db_helper.user_id(login=auth.username())
             json = str(vars(qrcode))
-            db_helper.add_waiting_code(user_id=user_id, json=json)
+            db_helper.add_waiting_code(json=json, login=auth.username())
 
             return jsonify({'message': "Check is not ready, added to waiting list."}), 202
     except ConnectionError:
@@ -61,11 +60,12 @@ def send_qrcode():
 
     check = parse_check(check)
     # add check and its items to DB
-    user_id = db_helper.user_id(login=auth.username())
-    check_id = db_helper.add_check(specifier=check.specifier, shop=check.shop, date=check.date, user_id=user_id)
-    check.id = check_id
+    check.id = db_helper.add_check(specifier=check.specifier,
+                                   shop=check.shop,
+                                   date=check.date,
+                                   login=auth.username())
     for item in check.items:
-        db_helper.add_item(name=item.name, price=item.price, quant=item.quantity, check_id=check_id, category_id=1)
+        db_helper.add_item(name=item.name, price=item.price, quant=item.quantity, check_id=check.id, category_id=1)
 
     return jsonify({'message': "Check added to DB.",
                     'check': marshal(vars(check), check_fields),
