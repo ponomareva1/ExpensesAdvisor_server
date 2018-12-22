@@ -2,12 +2,9 @@ import logging
 import os
 
 import psycopg2 as pg
-from os import listdir
-from db.date.ItemInfo import *
 from db.DBConstants import *
 
 # TODO: methods for statistic
-# TODO: methods for waiting chacks
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +29,9 @@ class DBHelper:
     # User API
     #
     def users(self):
-        return self.__select_all_query(USERS_TABLE)
+        users = self.__select_all_query(USERS_TABLE)
+        fields = ['id', 'username', 'password']
+        return [dict(zip(fields, user)) for user in users]
 
     def add_user(self, login, password):
         values = "('{login}','{password}')".format(login=login, password=password)
@@ -48,6 +47,9 @@ class DBHelper:
                         THEN True
                         ELSE False END""".format(USERS_TABLE=USERS_TABLE, login=login)
         return self.query(query)[0][0]
+
+    def user_password(self, login):
+        return self.__select_query("password", USERS_TABLE, "WHERE login = '{}'".format(login))[0][0]
 
     def user_id(self, login):
         return self.__select_query("id", USERS_TABLE, "WHERE login = '{}'".format(login))[0][0]
@@ -80,9 +82,10 @@ class DBHelper:
     def items_info(self, check_id):
         columns = "i.name,price,quant,c.name AS category"
         tables = """{ITEMS_TABLE} i JOIN {CHECKS_TABLE} ch ON ch.id = i.id_check 
-                                    JOIN {CATEGORIES_TABLE} c ON c.id = i.id_category""".format(ITEMS_TABLE=ITEMS_TABLE,
-                                                                                                CHECKS_TABLE=CHECKS_TABLE,
-                                                                                                CATEGORIES_TABLE=CATEGORIES_TABLE)
+                                    JOIN {CATEGORIES_TABLE} c ON c.id = i.id_category""". \
+            format(ITEMS_TABLE=ITEMS_TABLE,
+                   CHECKS_TABLE=CHECKS_TABLE,
+                   CATEGORIES_TABLE=CATEGORIES_TABLE)
         constraint = "WHERE ch.id = {id}".format(id=check_id)
         return self.__select_query(columns, tables, constraint)
 
@@ -135,7 +138,8 @@ class DBHelper:
     #
     # Queries
     #
-    def __connect(self, user, password, host, port, db_name):
+    @staticmethod
+    def __connect(user, password, host, port, db_name):
         return pg.connect(
             "dbname='{db_name}' user='{user}' host='{host}' password='{passw}'".format(db_name=db_name,
                                                                                        user=user,
@@ -156,22 +160,21 @@ class DBHelper:
             logger.warn("Error with query : {}".format(query))
             logger.warn(e)
 
-    def __query_with_args(self, command, tableName, constraint=""):
-        query = command + " " + tableName + " " + constraint
+    def __query_with_args(self, command, table_name, constraint=""):
+        query = command + " " + table_name + " " + constraint
         return self.query(query)
 
-    def __update_query(self, tableName, set, constraint=""):
-        self.__query_with_args("UPDATE", tableName, " SET " + set + " " + constraint)
+    def __update_query(self, table_name, set, constraint=""):
+        self.__query_with_args("UPDATE", table_name, " SET " + set + " " + constraint)
 
-    def __insert_query(self, tableName, where, what):
-        self.__query_with_args("INSERT INTO", tableName, where + " VALUES " + what)
+    def __insert_query(self, table_name, where, what):
+        self.__query_with_args("INSERT INTO", table_name, where + " VALUES " + what)
 
-    def __select_query(self, columns, tableName, constraint=""):
-        return self.__query_with_args("SELECT {columns} FROM ".format(columns=columns), tableName, constraint)
+    def __select_query(self, columns, table_name, constraint=""):
+        return self.__query_with_args("SELECT {columns} FROM ".format(columns=columns), table_name, constraint)
 
-    def __select_top_query(self, n, tableName, columns="*", constraint=""):
-        return self.__select_query(columns, tableName, constraint + "LIMIT {}".format(n))
+    def __select_top_query(self, n, table_name, columns="*", constraint=""):
+        return self.__select_query(columns, table_name, constraint + "LIMIT {}".format(n))
 
-    def __select_all_query(self, tableName, constraint=""):
-        return self.__select_query("*", tableName, constraint)
-
+    def __select_all_query(self, table_name, constraint=""):
+        return self.__select_query("*", table_name, constraint)

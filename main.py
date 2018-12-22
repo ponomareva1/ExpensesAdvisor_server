@@ -8,9 +8,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, make_response, jsonify, Blueprint
 from flask_httpauth import HTTPBasicAuth
 
+from db.DBHelper import DBHelper
 from routes import common
-from routes.common import auth, users
-
+from routes.common import auth
 from routes.qr_code import *
 from routes.checks import *
 from routes.items import *
@@ -53,11 +53,15 @@ app.register_blueprint(common.statistics_route)
 
 @auth.verify_password
 def verify_password(username, password):
-    if username in users:
-        # get hashed password of user
-        hashed = users.get(username)
-        # check if received password equals to previously hashed
-        return bcrypt.checkpw(password.encode(), hashed)
+    db_helper = DBHelper()
+    user_exist = db_helper.user_exist(username)
+    if user_exist:
+        hashed_password = db_helper.user_password(username)
+        try:
+            match = bcrypt.checkpw(password.encode(), hashed_password.encode())
+            return match
+        except ValueError:
+            return False
     else:
         return False
 

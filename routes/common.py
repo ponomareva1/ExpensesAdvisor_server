@@ -1,4 +1,3 @@
-import bcrypt
 from flask import Blueprint, jsonify
 from flask_httpauth import HTTPBasicAuth
 
@@ -9,10 +8,6 @@ checks_route = Blueprint('checks', __name__)
 items_route = Blueprint('items', __name__)
 user_route = Blueprint('user', __name__)
 statistics_route = Blueprint('statistics', __name__)
-
-users = {
-    "ponome": bcrypt.hashpw("ponome".encode(), bcrypt.gensalt())
-}
 
 checks = list()
 QRcodes = list()
