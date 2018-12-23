@@ -67,4 +67,4 @@ def user_all_users():
     for user in users_list:
         usernames.append(user['username'])
 
-    return jsonify({'message': usernames}), 200
+    return jsonify({'users': usernames}), 200
