@@ -68,3 +68,11 @@ def user_all_users():
         usernames.append(user['username'])
 
     return jsonify({'users': usernames}), 200
+
+
+def periodic_fns_login():
+    fns_connector = FNSConnector()
+    try:
+        fns_connector.login()
+    except ConnectionError:
+        return

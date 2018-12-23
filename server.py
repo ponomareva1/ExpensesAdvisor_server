@@ -54,7 +54,8 @@ def unauthorized():
 @app.before_first_request
 def init_scheduler():
     scheduler = BackgroundScheduler(daemon=True)
-    scheduler.add_job(scheduled_job, 'interval', hours=1)
+    scheduler.add_job(periodic_waiting_checks, 'interval', hours=1)
+    scheduler.add_job(periodic_fns_login, 'interval', minutes=10)
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown())
 

@@ -75,7 +75,7 @@ def send_qrcode():
                     'QRcode': marshal(vars(qrcode), QRcode_fields)}), 201
 
 
-def scheduled_job():
+def periodic_waiting_checks():
     db_helper = DBHelper()
     for waiting_code in db_helper.waiting_codes():
         json = waiting_code['json']
