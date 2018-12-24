@@ -83,7 +83,7 @@ class DBHelperTest(unittest.TestCase):
                                                                        WHERE specifier = '{}'""".format(tmp))
         self.db.add_user(tmp, tmp)
         user_id = self.db.user_id(tmp)
-        self.db.add_check(tmp, tmp, tmp, user_id)
+        self.db.add_check(tmp, tmp, tmp, tmp)
         self.assertEqual(True, self.db.query(check_query)[0][0])
         delete_user_query = self.delete_user_pattern.format(l=tmp, p=tmp)  # cascade deleting
         self.db.query(delete_user_query)
@@ -91,15 +91,18 @@ class DBHelperTest(unittest.TestCase):
     def test_get_last_checks(self):
         n = 5
         login = datetime.now().__str__()
-        self.db.add_user(login, login)
-        user_id = self.db.user_id(login)
+        user_id = self.db.add_user(login, login)
+        category_id = self.db.add_category(login)
         for i in range(n):
             tmp = datetime.now().__str__()
-            self.db.add_check(tmp, tmp, tmp, user_id)
+            check_id = self.db.add_check(tmp, tmp, tmp, login)
+            self.db.add_item(tmp, 10, 10, check_id, category_id)
         result = self.db.get_last_checks(n, login)
         self.assertEqual(len(result), n)
         delete_user_query = self.delete_user_pattern.format(l=login, p=login)  # cascade deleting
+        delete_category_query = self.delete_category_pattern.format(login)
         self.db.query(delete_user_query)
+        self.db.query(delete_category_query)
 
 
 if __name__ == '__main__':

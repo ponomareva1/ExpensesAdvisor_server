@@ -4,7 +4,6 @@ import os
 import psycopg2 as pg
 from db.DBConstants import *
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -52,8 +51,9 @@ class DBHelper:
     #
     # Checks API
     #
-    def checks(self):
-        return self.__select_all_query(CHECKS_TABLE)
+    def checks(self, user_id):
+        constraint = """WHERE id_user={}""".format(user_id)
+        return self.__select_all_query(CHECKS_TABLE, constraint)
 
     def add_check(self, specifier, shop, date, login):
         user_id = self.user_id(login)
@@ -65,16 +65,16 @@ class DBHelper:
 
     def get_last_checks(self, limit, login):
         user_id = self.user_id(login)
-        columns = "ch.id, ch.shop, ch.date, ch.id_user, sum(i.price) as sum"
+        columns = "ch.id, ch.shop, ch.date, sum(i.price*i.quant) as sum"
         tables = "{CHECKS_TABLE} ch JOIN {ITEMS_TABLE} i ON ch.id = i.id_check".format(ITEMS_TABLE=ITEMS_TABLE,
                                                                                        CHECKS_TABLE=CHECKS_TABLE)
         constraint = """WHERE ch.id_user = {user_id}
-                        GROUP BY ch.id, ch.shop, ch.date, ch.id_user
+                        GROUP BY ch.id
                         LIMIT {limit}
                         """.format(user_id=user_id, limit=limit)
         checks = self.__select_query(columns, tables, constraint)
 
-        fields = ['id', 'shop', 'date', 'user_id', 'sum']
+        fields = ['id', 'shop', 'date', 'sum']
         return [dict(zip(fields, check)) for check in checks]
 
     def check_id(self, specifier):
