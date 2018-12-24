@@ -70,7 +70,7 @@ class DBHelper:
                                                                                        CHECKS_TABLE=CHECKS_TABLE)
         constraint = """WHERE ch.id_user = {user_id}
                         GROUP BY ch.id
-                        ORDER BY ch.date
+                        ORDER BY ch.date DESC
                         LIMIT {limit}
                         """.format(user_id=user_id, limit=limit)
         checks = self.__select_query(columns, tables, constraint)
