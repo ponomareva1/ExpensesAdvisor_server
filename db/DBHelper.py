@@ -185,7 +185,7 @@ class DBHelper:
         query = """
                 WITH
                   days AS (
-                      SELECT generate_series(current_date-30, current_date+1, '1d')::date AS day
+                      SELECT generate_series(current_date-10, current_date+1, '1d')::date AS day
                   ),
                   checks AS (
                       SELECT * FROM public."Checks" ch WHERE ch.id_user = {user_id}
@@ -216,13 +216,13 @@ class DBHelper:
             cursor.execute(query)
             rows = cursor.fetchall() if cursor.description is not None else None
             self.connection.commit()
-            cursor.close()
             return rows
         except Exception as e:
             self.connection.rollback()
-            cursor.close()
             logger.warn("Error with query : {}".format(query))
             logger.warn(e)
+        finally:
+            cursor.close()
 
     def __query_with_args(self, command, table_name, constraint=""):
         query = command + " " + table_name + " " + constraint
