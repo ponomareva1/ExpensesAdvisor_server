@@ -4,7 +4,7 @@ from flask_restful import marshal, fields
 from db.DBHelper import DBHelper
 from routes.checks import check_fields
 from routes.common import auth, invalid_input, qrcode_route
-from shemas.shemas import QRcode
+from schemas.schemas import QRcode
 from utils.data_mapper import parse_check
 from utils.fns import FNSConnector
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from shemas.shemas import Check, Item
+from schemas.schemas import Check, Item
 
 
 def parse_check(check_dict):
@@ -37,7 +37,7 @@ def parse_check(check_dict):
 
 if __name__ == '__main__':
     from utils.fns import FNSConnector
-    from shemas.shemas import QRcode
+    from schemas.schemas import QRcode
 
     fns_connector = FNSConnector()
     fns_connector.login()

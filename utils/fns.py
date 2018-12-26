@@ -2,7 +2,7 @@ import logging
 
 import requests
 
-from shemas.shemas import QRcode
+from schemas.schemas import QRcode
 
 logger = logging.getLogger("fns_connector")
 logger.setLevel(logging.INFO)

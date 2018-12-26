@@ -24,15 +24,3 @@ class Check:
         self.sum = sum  # Полная сумма
         self.items = items  # Список объектов Item
         self.specifier = specifier  # Специфичный идентификатор чека ({fn}-{fp}-{fd})
-
-
-class MonthlyCategories:
-    def __init__(self, category, sum):
-        self.category = category  # Категория
-        self.sum = sum  # Сумма по категории
-
-
-class MeanCheck:
-    def __init__(self, days, meanCheck):
-        self.days = days  # Период, за который собрана статистика
-        self.meanCheck = meanCheck  # Средний чек
