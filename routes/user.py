@@ -1,3 +1,5 @@
+import logging
+
 import bcrypt
 from flask import jsonify, request
 
@@ -71,6 +73,7 @@ def user_all_users():
 
 
 def periodic_fns_login():
+    logging.info("Starting periodic_fns_login job")
     fns_connector = FNSConnector()
     try:
         fns_connector.login()

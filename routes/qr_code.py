@@ -1,3 +1,5 @@
+import logging
+
 from flask import request, jsonify
 from flask_restful import marshal, fields
 
@@ -76,6 +78,7 @@ def send_qrcode():
 
 
 def periodic_waiting_checks():
+    logging.info("Starting periodic_waiting_checks job")
     db_helper = DBHelper()
     for waiting_code in db_helper.waiting_codes():
         json = waiting_code['json']
@@ -84,22 +87,24 @@ def periodic_waiting_checks():
         db_helper = DBHelper()
         try:
             check = fns_connector.get_check(qrcode)
-            if check is not None:
-                check = parse_check(check)
-                # add check and its items to DB
-                if not db_helper.check_unique(check.specifier):
-                    db_helper.delete_waiting_code(waiting_code['id'])
-                    return
-
-                username = db_helper.user_login(waiting_code['user_id'])
-                check.id = db_helper.add_check(specifier=check.specifier,
-                                               shop=check.shop,
-                                               date=check.date,
-                                               login=username)
-                for item in check.items:
-                    db_helper.add_item(name=item.name, price=item.price, quant=item.quantity, check_id=check.id,
-                                       category_id=1)
-
+            if check is None:
+                continue
+            check = parse_check(check)
+            # add check and its items to DB
+            if not db_helper.check_unique(check.specifier):
+                logging.info("Check already exist in DB (specifier: {})".format(check.specifier))
                 db_helper.delete_waiting_code(waiting_code['id'])
+                return
+
+            username = db_helper.user_login(waiting_code['user_id'])
+            check.id = db_helper.add_check(specifier=check.specifier,
+                                           shop=check.shop,
+                                           date=check.date,
+                                           login=username)
+            for item in check.items:
+                db_helper.add_item(name=item.name, price=item.price, quant=item.quantity, check_id=check.id,
+                                   category_id=1)
+
+            db_helper.delete_waiting_code(waiting_code['id'])
         except ConnectionError:
             return
