@@ -109,4 +109,4 @@ def periodic_waiting_checks():
             logging.info("Waiting check added to DB")
         except ConnectionError as e:
             logging.error(str(e))
-            return
+            continue
