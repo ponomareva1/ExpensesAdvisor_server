@@ -106,5 +106,7 @@ def periodic_waiting_checks():
                                    category_id=1)
 
             db_helper.delete_waiting_code(waiting_code['id'])
-        except ConnectionError:
+            logging.info("Waiting check added to DB")
+        except ConnectionError as e:
+            logging.error(str(e))
             return
