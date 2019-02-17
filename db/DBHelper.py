@@ -65,7 +65,7 @@ class DBHelper:
 
     def get_last_checks(self, limit, login):
         user_id = self.user_id(login)
-        columns = "ch.id, ch.shop, ch.date, sum(i.price*i.quant) as sum"
+        columns = "ch.id, ch.shop, ch.date, sum(i.price)"
         tables = "{CHECKS_TABLE} ch JOIN {ITEMS_TABLE} i ON ch.id = i.id_check".format(ITEMS_TABLE=ITEMS_TABLE,
                                                                                        CHECKS_TABLE=CHECKS_TABLE)
         constraint = """WHERE ch.id_user = {user_id}
