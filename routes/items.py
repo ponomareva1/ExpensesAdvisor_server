@@ -48,7 +48,7 @@ def update_items_category():
         return invalid_input("Category must be a string.")
 
     db_helper = DBHelper()
-    if not db_helper.category_exist(category_name=category):
+    if not db_helper.category_exist(name=category):
         return jsonify({'error': "Category with the name={} was not found.".format(category)}), 404
     new_category_id = db_helper.category_id(category)
 
