@@ -93,34 +93,3 @@ class FNSConnector:
                                    fd=qrcode.fd,
                                    s=qrcode.s)
 
-
-if __name__ == '__main__':
-    fns_connector = FNSConnector()
-    fns_connector.login()
-
-    qrcode1 = QRcode(t="20180927T1801",
-                     fn="9282000100155754",
-                     fp="2472140768",
-                     fd="8723",
-                     s="32877")
-
-    qrcode2 = QRcode(t="20181122T2119",
-                     fn="9282000100043216",
-                     fp="3013868136",
-                     fd="166128",
-                     s="139501")
-
-    qrcode3 = QRcode(t="20181108T1433",
-                     fn="8710000101497815",
-                     fp="2592181763",
-                     fd="50071",
-                     s="151200")
-
-    if fns_connector.is_qrcode_correct(qrcode1):
-        print(fns_connector.get_check(qrcode1))
-
-    if fns_connector.is_qrcode_correct(qrcode2):
-        print(fns_connector.get_check(qrcode2))
-
-    if fns_connector.is_qrcode_correct(qrcode3):
-        print(fns_connector.get_check(qrcode3))
